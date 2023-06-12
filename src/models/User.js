@@ -1,4 +1,6 @@
-const User = mongoose.model('User', userSchema);
+const {Schema, model} = require('mongoose')
+
+const User = model('User', userSchema);
 const userSchema = new mongoose.Schema({
     id: {
       type: mongoose.Schema.Types.ObjectId,
@@ -39,7 +41,7 @@ const userSchema = new mongoose.Schema({
     profilePic: {
       type: String,
       required: true,
-      default: "../images/rick-and-morty-icon-21.jpeg",
+      default: "",
     },
   }, { timestamps: false });
   

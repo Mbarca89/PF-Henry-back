@@ -9,6 +9,8 @@ export const connectDB = async () => {
   }
 };
 
+mongoose.set('strictQuery', false)
+
 mongoose.connection.on("connected", () => {
   console.log("Mongodb is connected to", mongoose.connection.db.databaseName);
 });

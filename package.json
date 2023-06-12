@@ -7,7 +7,7 @@
     "dev": "nodemon server --watch server",
     "debug": "nodemon --inspect server --watch server",
     "build:frontend": "npm run build --prefix client",
-    "start": "node server"
+    "start": "node index.js"
   },
   "keywords": [],
   "author": "",
