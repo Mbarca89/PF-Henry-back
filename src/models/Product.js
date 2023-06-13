@@ -35,6 +35,15 @@ const productSchema = new Schema({
     },
 }, { timestamps: false });
 
+productSchema.set('toJSON', {
+  transform: (document, returnedObject) => {
+    returnedObject.id = returnedObject._id
+    delete returnedObject._id
+    delete returnedObject.__v
+
+  }
+})
+
 const Product = model('Product', productSchema);
 
 export default Product

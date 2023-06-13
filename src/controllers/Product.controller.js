@@ -5,6 +5,10 @@ import fs from "fs-extra";
 const postProduct = async (req, res) => {
     try {
         const { name, price, description, stock } = req.body
+        if(!name) throw Error ('El nombre no puede estar vacio')
+        if(!price) throw Error ('El precio no puede estar vacio')
+        if(!description) throw Error ('El description no puede estar vacio')
+        if(!stock) throw Error ('El stock no puede estar vacio')
         const photos = req.files?.photos
         let uploadPhotos = []
         if (photos) {
@@ -29,7 +33,7 @@ const postProduct = async (req, res) => {
                 );
             }
         }
-        const newProduct = new Product({ name, price, description, stock, photos:uploadPhotos });
+        const newProduct = new Product({ name, price, description, stock, photos: uploadPhotos });
         await newProduct.save();
         return res.status(200).json(newProduct);
     } catch (error) {
@@ -37,4 +41,17 @@ const postProduct = async (req, res) => {
     }
 }
 
-export default postProduct
+const getProductById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const product = await Product.findById(id);
+        if (!product) {
+            throw Error('Producto no encontrado');
+        }
+        return res.status(200).json(product);
+    } catch (error) {
+        return res.status(500).send(error.message);
+    }
+};
+
+export { postProduct, getProductById }
