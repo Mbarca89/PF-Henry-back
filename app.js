@@ -2,6 +2,7 @@ import express from "express";
 import morgan from "morgan";
 import fileUpload from "express-fileupload";
 import path from 'path'
+import router from './src/routes/index.js'
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -23,6 +24,6 @@ app.use(
 app.use(express.static(path.join(__dirname, '../client/build')));
 
 // Routes
-
+app.use('/', router);
 
 export { app };
