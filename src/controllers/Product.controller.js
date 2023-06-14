@@ -54,4 +54,16 @@ const getProductById = async (req, res) => {
     }
 };
 
-export { postProduct, getProductById }
+const getAllProducts = async (req, res) => {
+    try {
+        const products = await Product.find();
+        if (!products) {
+            throw Error('Error al obtener productos');
+        }
+        return res.status(200).json(products);
+    } catch (error) {
+        return res.status(500).send(error.message);
+    }
+};
+
+export { postProduct, getProductById, getAllProducts }

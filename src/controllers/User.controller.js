@@ -18,6 +18,9 @@ const createUser = async (req, res) => {
         const newCart = new Cart({ user: newUser._id })
         await newCart.save()
 
+        newUser.cart = newCart._id
+        newUser.save()
+
         return res.status(201).json({ newUser, newCart })
 
     } catch (error) {
