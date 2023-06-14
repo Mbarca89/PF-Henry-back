@@ -2,8 +2,23 @@ import { Schema, model } from 'mongoose'
 
 
 const cartSchema = new Schema({
-    user: { type: Schema.Types.ObjectId, ref: 'User' },
-    products: [{ type: Schema.Types.ObjectId, ref: 'Product' }]
+    user: {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    },
+    products: [{
+        product: {
+            type: Schema.Types.ObjectId,
+            ref: 'Product'
+        },
+        quantity: {
+            type: Number,
+            default: 1
+        },
+        price:{
+        type: Number,
+        }
+    }]
 }, { timestamps: false });
 
 cartSchema.set('toJSON', {
