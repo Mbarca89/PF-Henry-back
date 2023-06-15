@@ -37,6 +37,10 @@ const userSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Cart',
   },
+  role:{
+    type :String,
+    default: 'user'
+  }
 }, { timestamps: false });
 
 userSchema.set('toJSON', {
