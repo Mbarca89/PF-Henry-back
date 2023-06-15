@@ -2,17 +2,11 @@ import Order from "../models/Order.js";
 
 const postOrder = async (req, res) => {
   try {
-    const {
-      userID,
-      totalAmount,
-      itemName,
-      itemQuantity,
-      itemPrice,
-      orderDate,
-    } = req.body; // Change 'body' to 'req.body'
+    const { user, totalAmount, itemName, itemQuantity, itemPrice, orderDate } =
+      req.body; // Change 'body' to 'req.body'
 
     const newOrder = await Order.create({
-      userID,
+      user,
       totalAmount,
       itemName,
       itemQuantity,
