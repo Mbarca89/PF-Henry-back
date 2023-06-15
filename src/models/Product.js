@@ -33,6 +33,18 @@ const productSchema = new Schema({
         type: [],
         required: false,
     },
+    category: {
+      type: Schema.Types.ObjectId,
+      ref: "Category",
+    },
+    freeShipping: {
+      type: Boolean,
+      default:false
+    },
+    sales:{
+      type:Number,
+      default: 0
+    }
 }, { timestamps: false });
 
 productSchema.set('toJSON', {
