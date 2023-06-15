@@ -8,10 +8,14 @@ const categorySchema = new Schema(
       unique: true,
     },
 
-    product: {
-      type: Schema.Types.ObjectId,
-      ref: "Product",
-    },
+    products: [
+      {
+        product: {
+          type: Schema.Types.ObjectId,
+          ref: "Product",
+        },
+      },
+    ],
   },
   { timestamps: false }
 );

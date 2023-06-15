@@ -29,4 +29,37 @@ const getAllCategories = async (req, res) => {
   }
 };
 
-export { postCategory, getAllCategories };
+const getCategoryById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const category = await Category.findById(id);
+    if (!category) {
+      throw Error("Categoría no encontrada");
+    }
+    return res.status(200).json(category);
+  } catch (error) {
+    return res.status(500).send(error.message);
+  }
+};
+
+const updateCategory = async (req, res) => {
+  try {
+    const { id, categoryName } = req.body;
+
+    const updatedCategory = await Category.findByIdAndUpdate(
+      id,
+      { categoryName },
+      { new: true }
+    );
+
+    if (!updatedCategory) {
+      throw Error("Categoría no encontrada");
+    }
+
+    return res.status(200).json(updatedCategory);
+  } catch (error) {
+    return res.status(500).send(error.message);
+  }
+};
+
+export { postCategory, getAllCategories, getCategoryById, updateCategory };
