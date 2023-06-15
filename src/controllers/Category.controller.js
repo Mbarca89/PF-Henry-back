@@ -62,35 +62,4 @@ const updateCategory = async (req, res) => {
   }
 };
 
-/* const updateCategory = async (req, res) => {
-  try {
-    const { categoryName, id } = req.body;
-
-    if (!id) throw Error("Id must be provided");
-
-    const category = updateCat(categoryName, id);
-
-    if (category.error) throw Error(category.error);
-
-    return res.status(200).json({ message: "Category updated successfully" });
-  } catch (error) {
-    res
-      .status(400)
-      .json({ error: "Error updating category", message: error.message });
-  }
-};
-
-const updateCat = async (categoryName, id) => {
-  const category = await getCategoryById(id);
-
-  if (!category) return category;
-
-  category.categoryName = categoryName || category.categoryName;
-
-  // Save the changes to the database
-  await category.save();
-
-  return category;
-}; */
-
 export { postCategory, getAllCategories, getCategoryById, updateCategory };
