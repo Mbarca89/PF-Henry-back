@@ -3,7 +3,7 @@ import Cart from "../models/Cart.js";
 
 const createUser = async (req, res) => {
     try {
-        const { name, email, password, address, city, province, postalCode } = req.body
+        const { name, email, password, address, city, province, postalCode,role } = req.body
         if (!name) throw Error('El nombre no puede estar vacio')
         if (!email) throw Error('El Email no puede estar vacio')
         if (!password) throw Error('La contraseña no puede estar vacia')
@@ -12,7 +12,7 @@ const createUser = async (req, res) => {
         if (!province) throw Error('La provincia no puede estar vacia')
         if (!postalCode) throw Error('El código postal no puede estar vacío')
 
-        const newUser = new User({ name, email, password, address, city, province, postalCode })
+        const newUser = new User({ name, email, password, address, city, province, postalCode,role })
         await newUser.save()
 
         const newCart = new Cart({ user: newUser._id })
@@ -33,4 +33,16 @@ const createUser = async (req, res) => {
     }
 }
 
-export default createUser
+const getUsers = async (req, res) => {
+    try {
+        const users = await User.find();
+        if (!users) {
+            throw Error('Error al obtener productos');
+        }
+        return res.status(200).json(users);
+    } catch (error) {
+        return res.status(500).send(error.message);
+    }
+};
+
+export {createUser, getUsers}
