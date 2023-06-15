@@ -1,13 +1,14 @@
 import Router from 'express';
-import {postProduct, getProductById, getAllProducts} from '../controllers/Product.controller.js'
+import {postProduct, getProductById, getAllProducts, getFromSeller} from '../controllers/Product.controller.js'
 
 
 
 const productRoutes = Router();
 
 productRoutes.post('/post', postProduct)
-productRoutes.get('/', getAllProducts)
+productRoutes.post('/', getAllProducts)
 productRoutes.get('/detail/:id', getProductById)
+productRoutes.get('/:userId',getFromSeller)
 
 
 export default productRoutes;
