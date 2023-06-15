@@ -50,7 +50,11 @@ const productSchema = new Schema({
     default: 1,
     min: 1,
     max: 5,
-  }
+  },
+  seller: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+  },
 }, { timestamps: false });
 
 productSchema.set('toJSON', {
