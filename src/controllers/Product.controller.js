@@ -80,9 +80,9 @@ const getAllProducts = async (req, res) => {
 
     const sortParameters = {}
 
-    if (sort.price) sort.price.order === 'asc' ? sortParameters.price = 1 : sortParameters.price = -1
-    if (sort.relevant) sort.relevant.order === 'asc' ? sortParameters.rating = 1 : sortParameters.rating = -1
-    if (sort.sales) sort.sales.order === 'asc' ? sortParameters.sales = 1 : sortParameters.sales = -1
+    if (sort.price.isSorted) sort.price.order === 'asc' ? sortParameters.price = 1 : sortParameters.price = -1
+    if (sort.relevant.isSorted) sort.relevant.order === 'asc' ? sortParameters.rating = 1 : sortParameters.rating = -1
+    if (sort.sales.isSorted) sort.sales.order === 'asc' ? sortParameters.sales = 1 : sortParameters.sales = -1
 
 
     const options = {
