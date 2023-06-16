@@ -103,14 +103,15 @@ const getAllProducts = async (req, res) => {
     })
 
     const filters = {
-        $or: nameFilter
+        $or: nameFilter,
+        price:{$gte:0,$lte:Infinity}
     }
 
     if (freeShipping) filters.freeShipping = freeShipping
     if (hasDiscount) filters.hasDiscount = hasDiscount
     if (category) filters.category = category
-    if (minPrice) fils.price.$gte = Number(minPrice)
-    if (maxPrice) filters.terprice.$lte = Number(maxPrice)
+    if (minPrice) filters.price.$gte = Number(minPrice)
+    if (maxPrice) filters.price.$lte = Number(maxPrice)
 
 
     try {
@@ -118,9 +119,8 @@ const getAllProducts = async (req, res) => {
         if (!products) {
             throw Error('Error al obtener productos');
         }
-        // const count = await Product.countDocuments({})
-        const count = products.length
-        return res.status(200).json({ count, products });
+        const totalCount = await Product.countDocuments(filters, null, null)
+        return res.status(200).json({ totalCount, products });
     } catch (error) {
         return res.status(500).send(error.message);
     }
