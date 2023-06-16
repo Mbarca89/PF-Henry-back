@@ -5,7 +5,7 @@ import fs from "fs-extra";
 
 const postProduct = async (req, res) => {
     try {
-        const { name, price, description, stock, userId, categoryId } = req.body
+        const { name, price, description, stock, userId, categoryId, freeShipping } = req.body
         if (!name) throw Error('El nombre no puede estar vacio')
         if (!price) throw Error('El precio no puede estar vacio')
         if (!description) throw Error('El description no puede estar vacio')
@@ -34,10 +34,10 @@ const postProduct = async (req, res) => {
                 );
             }
         }
-        const newProduct = new Product({ name, price, description, stock, photos: uploadPhotos, seller:userId, category:categoryId });
+        const newProduct = new Product({ name, price, description, stock, photos: uploadPhotos, seller: userId, category: categoryId, freeShipping });
         await newProduct.save();
-        const category = await Category.findOne({_id:categoryId})
-        if(!category) throw Error ('Categoría no encontrada')
+        const category = await Category.findOne({ _id: categoryId })
+        if (!category) throw Error('Categoría no encontrada')
         category.products.push(newProduct._id)
         await category.save()
         return res.status(200).json(newProduct);
@@ -62,7 +62,7 @@ const getProductById = async (req, res) => {
 const getFromSeller = async (req, res) => {
     try {
         const { userId } = req.params;
-        const products = await Product.find({seller:userId});
+        const products = await Product.find({ seller: userId });
         if (!products) {
             throw Error('Producto no encontrado');
         }
@@ -75,31 +75,102 @@ const getFromSeller = async (req, res) => {
 const getAllProducts = async (req, res) => {
     const productsPerPage = 12
     const { page } = req.query
-    const minPrice = req.body.minPrice || 0
-    const maxPrice = req.body.maxPrice || Infinity
-    const sort = req.body.sort || {price:{isSorted:false},relevant:{isSorted:false}}
+
+    const sort = req.body.sort || { price: { isSorted: false }, relevant: { isSorted: false }, sales: { isSorted: false } }
+
     const sortParameters = {}
-    if (sort.price.isSorted){
-        sort.price.order === 'asc' ? sortParameters.price = 1:sortParameters.price = -1
-    }
-    if (sort.relevant.isSorted){
-        sort.relevant.order === 'asc' ? sortParameters.rating = 1:sortParameters.rating = -1
-    }
+
+    if (sort.price) sort.price.order === 'asc' ? sortParameters.price = 1 : sortParameters.price = -1
+    if (sort.relevant) sort.relevant.order === 'asc' ? sortParameters.rating = 1 : sortParameters.rating = -1
+    if (sort.sales) sort.sales.order === 'asc' ? sortParameters.sales = 1 : sortParameters.sales = -1
+
+
     const options = {
         skip: (page - 1) * productsPerPage,
         limit: productsPerPage,
         sort: sortParameters
     }
+
+    const freeShipping = req.body.freeShipping || false
+    const hasDiscount = req.body.hasDiscount || false
+    const category = req.body.category || false
+    const minPrice = req.body.minPrice || false
+    const maxPrice = req.body.maxPrice || false
+    const name = req.query.name || '';
+    const decodedName = name.trim().split(' ')
+    const nameFilter = decodedName.map(element => {
+        return { name: { $regex: element, $options: 'i' } }
+    })
+
+    const filters = {
+        $or: nameFilter
+    }
+
+    if (freeShipping) filters.freeShipping = freeShipping
+    if (hasDiscount) filters.hasDiscount = hasDiscount
+    if (category) filters.category = category
+    if (minPrice) fils.price.$gte = Number(minPrice)
+    if (maxPrice) filters.terprice.$lte = Number(maxPrice)
+
+
     try {
-        const products = await Product.find({}, null, options);
+        const products = await Product.find(filters, null, options);
         if (!products) {
             throw Error('Error al obtener productos');
         }
-        const count = await Product.countDocuments({})
-        return res.status(200).json({count,products});
+        // const count = await Product.countDocuments({})
+        const count = products.length
+        return res.status(200).json({ count, products });
     } catch (error) {
         return res.status(500).send(error.message);
     }
 };
 
-export { postProduct, getProductById, getAllProducts, getFromSeller }
+const updateProduct = async (req, res) => {
+    try {
+        const {
+            id,
+            name,
+            price,
+            description,
+            stock,
+            hasDiscount,
+            discount,
+            photos,
+            category,
+            freeShipping,
+        } = req.body;
+
+        const updatedProduct = await Product.findByIdAndUpdate(
+            id,
+            {
+                name,
+                price,
+                description,
+                stock,
+                hasDiscount,
+                discount,
+                photos,
+                category,
+                freeShipping,
+            },
+            { new: true }
+        );
+        
+        if (!updatedProduct) {
+            throw Error("Producto no encontrado");
+        }
+
+        return res.status(200).json(updatedProduct);
+    } catch (error) {
+        return res.status(500).send(error.message);
+    }
+};
+
+export {
+    postProduct,
+    getProductById,
+    getAllProducts,
+    getFromSeller,
+    updateProduct
+}
