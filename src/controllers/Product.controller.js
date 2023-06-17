@@ -5,7 +5,7 @@ import fs from "fs-extra";
 
 const postProduct = async (req, res) => {
     try {
-        const { name, price, description, stock, userId, categoryId, freeShipping } = req.body
+        const { name, price, description, stock, userId, category, freeShipping } = req.body
         if (!name) throw Error('El nombre no puede estar vacio')
         if (!price) throw Error('El precio no puede estar vacio')
         if (!description) throw Error('El description no puede estar vacio')
@@ -34,15 +34,15 @@ const postProduct = async (req, res) => {
                 );
             }
         }
-        const newProduct = new Product({ name, price, description, stock, photos: uploadPhotos, seller: userId, category: categoryId, freeShipping });
+        const newProduct = new Product({ name, price, description, stock, photos: uploadPhotos, seller: userId, category, freeShipping });
+        const findCategory = await Category.findOne({ _id: category });
+        if (!findCategory) throw Error('Categoría no encontrada');
+        findCategory.products.push(newProduct._id);
         await newProduct.save();
-        const category = await Category.findOne({ _id: categoryId })
-        if (!category) throw Error('Categoría no encontrada')
-        category.products.push(newProduct._id)
-        await category.save()
+        await findCategory.save();
         return res.status(200).json(newProduct);
     } catch (error) {
-        return res.status(400).send(error.message)
+        return res.status(400).send(error.message);
     }
 }
 
