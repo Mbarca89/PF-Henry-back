@@ -13,6 +13,12 @@ const app = express();
 const __dirname = dirname(fileURLToPath(import.meta.url));
 app.use(cors())
 app.options('*', cors());
+app.use((req, res, next) => {
+  if (req.method === "OPTIONS") {
+    return res.status(200).end();
+}
+  next();
+});
 
 app.use(morgan("dev"));
 app.use(express.json());
