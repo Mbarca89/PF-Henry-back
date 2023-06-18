@@ -12,6 +12,7 @@ import { fileURLToPath } from 'url';
 const app = express();
 const __dirname = dirname(fileURLToPath(import.meta.url));
 app.use(cors())
+app.options('*', cors());
 
 app.use(morgan("dev"));
 app.use(express.json());
