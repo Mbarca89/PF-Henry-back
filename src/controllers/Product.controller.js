@@ -5,7 +5,8 @@ import fs from "fs-extra";
 
 const postProduct = async (req, res) => {
     try {
-        const { name, price, description, stock, userId, category, freeShipping } = req.body
+        if(!req.body.data) throw Error ('No hay datos')
+        const { name, price, description, stock, userId, category, freeShipping } = JSON.parse(req.body.data)
         if (!name) throw Error('El nombre no puede estar vacio')
         if (!price) throw Error('El precio no puede estar vacio')
         if (!description) throw Error('El description no puede estar vacio')
