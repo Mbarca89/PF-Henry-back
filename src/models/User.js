@@ -6,12 +6,12 @@ const userSchema = new Schema({
   name: {
     type: String,
     required: true,
-    unique:true
+    unique: true
   },
   email: {
     type: String,
     required: true,
-    unique:true
+    unique: true
   },
   password: {
     type: String,
@@ -37,11 +37,32 @@ const userSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Cart',
   },
-  role:{
-    type :String,
+  role: {
+    type: String,
     default: 'user',
     required: true,
-  }
+  },
+  phone: {
+    type: String,
+    required: false,
+  },
+  commerceName: {
+    type: String,
+    required: false,
+  },
+  purchasedProducts: [{
+    product: {
+      type: Schema.Types.ObjectId,
+      ref: 'Product'
+    },
+    price: {
+      type: Number,
+    },
+    reviewed: {
+      type: Boolean,
+      default: false
+    }
+  }]
 }, { timestamps: false });
 
 userSchema.set('toJSON', {
