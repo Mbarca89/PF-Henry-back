@@ -172,7 +172,8 @@ const updateProduct = async (req, res) => {
 
 const changeActivation = async (req,res) => {
     try {
-        const {isActive, productId} = req.body
+        const {isActive} = req.body
+        const {productId} = req.params
         const product = await Product.findById(productId)
         if (!product) throw Error('Producto no encontrado!')
         product.isActive = isActive

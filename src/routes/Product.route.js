@@ -15,10 +15,10 @@ const productRoutes = Router();
 
 productRoutes.post('/post', postProduct)
 productRoutes.post('/postreview', postReview)
-productRoutes.post('/changeactivation', changeActivation)
 productRoutes.post('/', getAllProducts)
 productRoutes.get('/detail/:id', getProductById)
 productRoutes.get('/:userId', getFromSeller)
+productRoutes.put('/changeactivation/:productId', changeActivation)
 productRoutes.put("/", updateProduct);
 
 
