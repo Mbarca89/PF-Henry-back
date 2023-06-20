@@ -46,14 +46,20 @@ const productSchema = new Schema({
     default: 0
   },
   rating: {
-    type: Number,
-    default: 1,
-    min: 1,
-    max: 5,
+    type: [Number],
+    required:false
+  },
+  reviews: {
+    type: [],
+    required: false,
   },
   seller: {
     type: Schema.Types.ObjectId,
     ref: "User",
+  },
+  isActive: {
+    type: Boolean,
+    default: true
   },
 }, { timestamps: false });
 

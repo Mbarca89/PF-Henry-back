@@ -5,6 +5,8 @@ import {
     getAllProducts,
     getFromSeller,
     updateProduct,
+    postReview,
+    changeActivation
 } from '../controllers/Product.controller.js'
 
 
@@ -12,6 +14,8 @@ import {
 const productRoutes = Router();
 
 productRoutes.post('/post', postProduct)
+productRoutes.post('/postreview', postReview)
+productRoutes.post('/changeactivation', changeActivation)
 productRoutes.post('/', getAllProducts)
 productRoutes.get('/detail/:id', getProductById)
 productRoutes.get('/:userId', getFromSeller)

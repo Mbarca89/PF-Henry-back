@@ -1,11 +1,12 @@
 import { deleteImage, uploadImage } from "../libs/cloudinary.js";
 import Product from "../models/Product.js";
 import Category from "../models/Category.js";
+import User from "../models/User.js";
 import fs from "fs-extra";
 
 const postProduct = async (req, res) => {
     try {
-        if(!req.body.data) throw Error ('No hay datos')
+        if (!req.body.data) throw Error('No hay datos')
         const { name, price, description, stock, userId, category, freeShipping } = JSON.parse(req.body.data)
         if (!name) throw Error('El nombre no puede estar vacio')
         if (!price) throw Error('El precio no puede estar vacio')
@@ -105,7 +106,8 @@ const getAllProducts = async (req, res) => {
 
     const filters = {
         $or: nameFilter,
-        price:{$gte:0,$lte:Infinity}
+        price: { $gte: 0, $lte: Infinity },
+        isActive:true
     }
 
     if (freeShipping) filters.freeShipping = freeShipping
@@ -157,7 +159,7 @@ const updateProduct = async (req, res) => {
             },
             { new: true }
         );
-        
+
         if (!updatedProduct) {
             throw Error("Producto no encontrado");
         }
@@ -168,10 +170,64 @@ const updateProduct = async (req, res) => {
     }
 };
 
+const changeActivation = async (req,res) => {
+    try {
+        const {isActive, productId} = req.body
+        const product = await Product.findById(productId)
+        if (!product) throw Error('Producto no encontrado!')
+        product.isActive = isActive
+        await product.save()
+        if (isActive === false) return res.status(200).send('Producto desactivado correctamente')
+        else return res.status(200).send('Producto activado correctamente')
+    } catch (error) {
+        return res.status(400).send(error.message)
+    }
+}
+
+const postReview = async (req, res) => {
+    try {
+        const { rating, review, productId, userId } = req.body
+        const product = await Product.findById(productId)
+        if (!product) throw Error('Producto no encontrado!')
+        const user = await User.findById(userId)
+        if (!user) throw Error('Usuario no encontrado!')
+        if(!rating) throw Error ('No se recibio ninguna puntuación')
+        if(rating < 1 || rating > 5) throw Error ('la puntuación debe ser entre 1 y 5')
+        if(!review) throw Error ('La reseña está vacía')
+
+        const purchasedProduct = user.purchasedProducts.find(
+            (purchased) => purchased.productId.toString() === productId
+        );
+        if (!purchasedProduct) {
+            throw new Error('El usuario no ha comprado este producto.');
+        }
+
+        if (purchasedProduct.reviewed) {
+            throw new Error('El usuario ya ha realizado una reseña para este producto.');
+          }
+
+        const userReview = {
+            user: user.name,
+            rating,
+            review
+        }
+        product.rating.push(Number(rating))
+        product.reviews.push(userReview)
+        purchasedProduct.reviewed = true
+        await product.save()
+        await user.save()
+        return res.status(200).send('Reseña publicada correctamente')
+    } catch (error) {
+        return res.status(400).send(error.message)
+    }
+}
+
 export {
     postProduct,
     getProductById,
     getAllProducts,
     getFromSeller,
-    updateProduct
+    updateProduct,
+    postReview,
+    changeActivation
 }
