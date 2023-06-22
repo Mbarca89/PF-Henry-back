@@ -3,7 +3,6 @@ import { HOST,MERCADO_PAGO_API_KEY } from "../../config.js";
 
 export const createOrder = async  (req, res)=> {
     const {productList} = req.body
-    console.log(MERCADO_PAGO_API_KEY)
     const items = productList.map((product) => {
         return {
             title: product.name,
@@ -26,7 +25,6 @@ export const createOrder = async  (req, res)=> {
         },
         notification_url:"https://ae8f-170-150-8-35.sa.ngrok.io/webhook",
      })
-     console.log(result)
 
     res.send(result.body);
 };
@@ -37,12 +35,10 @@ const payment = req.query
         
     if (payment.type === "payment") {
         const data = await mercadopago.payment.findById(payment['data.id'])
-        console.log (data)
         //Store in database 
 }
     res.sendStatus(204);
     } catch (error) {
-        console.log(error)
         return res.sendStatus(500).json({ error: error.message });
     }
 }
