@@ -1,24 +1,28 @@
 import mercadopago from "mercadopago";
-import { HOST,MERCADO_PAGO_API_KEY } from "../config.js";
+import { HOST,MERCADO_PAGO_API_KEY } from "../../config.js";
 
 export const createOrder = async  (req, res)=> {
+    const {productList} = req.body
+    console.log(MERCADO_PAGO_API_KEY)
+    const items = productList.map((product) => {
+        return {
+            title: product.name,
+            unit_price: product.unityPrice,
+            currency_id:"ARS",
+            quantity: product.quantity
+        }
+    })
+    
      mercadopago.configure({
         access_token: `${MERCADO_PAGO_API_KEY}`,
      });
      const result =  await mercadopago.preferences.create({
-        items: [
-            {
-                title: "Mazo de Cartas ",
-                unit_price: 500,
-                currency_id:"ARS",
-                quantity: 1,
-            }
-        ],
+        items,
        // Bakc Urls es a donde envia las respuestas  
         back_urls:{
-            success: `${HOST}/success`,
-            failure: `${HOST}/failure`,
-            pending: `${HOST}/pending`,
+            success: `${HOST}/checkout/success`,
+            failure: `${HOST}/checkout/failure`,
+            pending: `${HOST}/checkout/pending`,
         },
         notification_url:"https://ae8f-170-150-8-35.sa.ngrok.io/webhook",
      })

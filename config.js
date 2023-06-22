@@ -13,5 +13,5 @@ export const CLIENT_SECRET = process.env.CLIENT_SECRET
 export const CALLBACK_URL = process.env.CALLBACK_URL
 //MERCADO PAGO 
 //export const PORT = 4000
-export const HOST = `http://localhost:${PORT}`
+export const HOST = process.env.HOST
 export const MERCADO_PAGO_API_KEY = process.env.MERCADO_PAGO_API_TOKEN

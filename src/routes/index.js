@@ -8,6 +8,7 @@ import '../passport/google-auth.js'
 import passport from 'passport';
 import orderRoutes from "./Order.route.js";
 import categoryRoutes from "./Category.route.js";
+import paymentRoutes from './Payments.route.js';
 
 const router = Router();
 
@@ -24,6 +25,7 @@ router.use('/auth/google',passport.authenticate('sign-in-google',{
 router.use('/auth/login', loginRoutes)
 router.use("/orders", orderRoutes);
 router.use("/categories", categoryRoutes);
+router.use('/checkout', paymentRoutes)
 
 
 export default router;
