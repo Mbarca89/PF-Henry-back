@@ -15,9 +15,9 @@ passport.use("sign-in-google", new GoogleStrategy(
         if (!user.length) {
             const notFound = {
                 registered: false,
-                name: profile.name.givenName,
-                lastName: profile.name.familyName,
-                email: profile.emails[0].value
+                googleName: profile.name.givenName,
+                googleLastName: profile.name.familyName,
+                googleEmail: profile.emails[0].value
             }
             done(null, notFound)
         } else done(null, user)
