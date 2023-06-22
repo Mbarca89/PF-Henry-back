@@ -5,8 +5,9 @@ const getCart = async (req, res) => {
     try {
         const { userId } = req.params
         if (!userId) throw Error('Falta el ID de usuario')
-        const userCart = await Cart.findOne({ user: userId })
+        const userCart = await Cart.findOne({ user: userId }).populate('products.product')
         if (!userCart) throw Error('No existe el carrito')
+
         return res.status(200).json(userCart)
     } catch (error) {
         return res.status(400).send(error.message)
@@ -25,7 +26,7 @@ const addProduct = async (req, res) => {
         const userCart = await Cart.findOne({ user: userId })
         if (!userCart) throw Error('No existe el carrito')
 
-        userCart.products.push({ product: id, quantity, price: product.price })
+        userCart.products.push({product:product._id, quantity, price: product.price })
         await userCart.save()
 
         return res.status(200).send('Producto agregado correctamente!')

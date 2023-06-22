@@ -121,8 +121,6 @@ const getAllProducts = async (req, res) => {
     if (category) filters.category = category;
     if (minPrice) filters.price.$gte = Number(minPrice);
     if (maxPrice) filters.price.$lte = Number(maxPrice);
-
-    console.log(sortParameters)
   
     try {
       const products = await Product.aggregate([
