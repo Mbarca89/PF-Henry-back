@@ -6,25 +6,13 @@ const orderSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "User",
     },
-    totalAmount: {
+    totalOrderAmount: {
       type: Number,
       required: true,
     },
-
-    itemName: {
-      type: String,
-      required: true,
+    productList:{
+      type:[]
     },
-
-    itemQuantity: {
-      type: String,
-      required: true,
-    },
-    itemPrice: {
-      type: String,
-      required: true,
-    },
-
     orderDate: {
       type: Date,
       default: Date.now,
