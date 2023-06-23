@@ -30,4 +30,32 @@ const postOrder = async (req, res) => {
   }
 };
 
-export { postOrder };
+const getOrder = async (req, res) => {
+  try {
+    const { orderId } = req.params
+    if (!orderId) throw Error('Se necesita el ID de la orden')
+
+    const order = await Order.findById(orderId)
+    if (!order) throw Error('Orden no encontrada')
+
+    return res.status(200).json(order)
+  } catch (error) {
+    return res.status(400).send(error.message)
+  }
+}
+
+const getUserOrders = async (req, res) => {
+  try {
+    const { userId } = req.params
+    if (!userId) throw Error('Falta la ID del usuario')
+
+    const orders = await Order.find({ user: userId })
+    if (!orders) throw Error('Error al obtener ordenes')
+
+    return res.status(200).json(orders)
+  } catch (error) {
+    return res.status(400).send(error.message)
+  }
+}
+
+export { postOrder, getOrder, getUserOrders };
