@@ -141,13 +141,14 @@ const getAllProducts = async (req, res) => {
         { $limit: options.limit }
       ]);
   
-      if (!products || products.length === 0) {
-        throw Error('Error al obtener productos');
-      }
-  
       const totalCount = await Product.countDocuments(filters);
+
+      const transformedProducts = await products.map((product) => {
+        const { _id, __v, ...rest } = product;
+        return { id: _id, ...rest };
+      });
   
-      return res.status(200).json({ totalCount, products });
+      return res.status(200).json({ totalCount, products:transformedProducts });
     } catch (error) {
       return res.status(500).send(error.message);
     }
