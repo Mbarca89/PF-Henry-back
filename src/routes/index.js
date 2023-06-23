@@ -15,7 +15,7 @@ const router = Router();
 
 router.use('/products', productRoutes)
 router.use('/users', userRoutes);
-router.use('/cart',verifyToken, cartRoutes);
+router.use('/cart', cartRoutes);
 router.use('/auth/google',passport.authenticate('sign-in-google',{
     scope:[
         'https://www.googleapis.com/auth/userinfo.profile',
@@ -26,7 +26,7 @@ router.use('/auth/google',passport.authenticate('sign-in-google',{
 router.use('/auth/login', loginRoutes)
 router.use("/orders",verifyToken, orderRoutes);
 router.use("/categories", categoryRoutes);
-router.use('/checkout',verifyToken, paymentRoutes)
+router.use('/checkout', paymentRoutes)
 
 
 export default router;
