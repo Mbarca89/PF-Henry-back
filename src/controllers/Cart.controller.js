@@ -16,8 +16,8 @@ const getCart = async (req, res) => {
 
 const addProduct = async (req, res) => {
     try {
+        console.log('si estoy entrando')
         const { id, quantity, userId } = req.body
-        console.log(id, quantity, userId)
         const product = await Product.findById(id)
         if (!product) throw Error('Producto no encontrado')
 

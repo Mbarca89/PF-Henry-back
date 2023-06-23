@@ -61,5 +61,28 @@ const updateCategory = async (req, res) => {
     return res.status(500).send(error.message);
   }
 };
+const deleteCategory = async (req, res) => {
+  try {
+    const { id } = req.params;
 
-export { postCategory, getAllCategories, getCategoryById, updateCategory };
+    const deletedCategory = await Category.findByIdAndDelete(id);
+
+    if (!deletedCategory) {
+      throw Error("Categoría no encontrada");
+    }
+
+    return res
+      .status(200)
+      .json({ message: "Categoría eliminada correctamente" });
+  } catch (error) {
+    return res.status(500).send(error.message);
+  }
+};
+
+export {
+  postCategory,
+  getAllCategories,
+  getCategoryById,
+  updateCategory,
+  deleteCategory,
+};

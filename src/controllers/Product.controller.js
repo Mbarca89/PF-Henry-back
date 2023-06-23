@@ -141,10 +141,6 @@ const getAllProducts = async (req, res) => {
         { $limit: options.limit }
       ]);
   
-      if (!products || products.length === 0) {
-        throw Error('Error al obtener productos');
-      }
-  
       const totalCount = await Product.countDocuments(filters);
 
       const transformedProducts = products.map((product) => {
@@ -279,6 +275,22 @@ const getOffers = async (req, res) => {
       return res.status(500).send(error.message);
     }
   };
+  const deleteProduct = async (req, res) => {
+    try {
+      const { id } = req.params;
+  
+      const deletedProduct = await Product.findByIdAndDelete(id);
+  
+      if (!deletedProduct) {
+        throw Error('Producto no encontrado');
+      }
+  
+      return res.status(200).json({ message: 'Producto eliminado exitosamente' });
+    } catch (error) {
+      return res.status(500).send(error.message);
+    }
+  };
+  
 
 export {
     postProduct,
@@ -288,5 +300,6 @@ export {
     updateProduct,
     postReview,
     changeActivation,
-    getOffers
+    getOffers,
+    deleteProduct,
 }
