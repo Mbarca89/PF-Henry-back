@@ -143,12 +143,12 @@ const getAllProducts = async (req, res) => {
   
       const totalCount = await Product.countDocuments(filters);
 
-      const transformedProducts = await products.map((product) => {
+      const transformedProducts = products.map((product) => {
         const { _id, __v, ...rest } = product;
         return { id: _id, ...rest };
       });
   
-      return res.status(200).json({ totalCount, products:transformedProducts });
+      return res.status(200).json({ totalCount, products: transformedProducts });
     } catch (error) {
       return res.status(500).send(error.message);
     }
@@ -275,6 +275,22 @@ const getOffers = async (req, res) => {
       return res.status(500).send(error.message);
     }
   };
+  const deleteProduct = async (req, res) => {
+    try {
+      const { id } = req.params;
+  
+      const deletedProduct = await Product.findByIdAndDelete(id);
+  
+      if (!deletedProduct) {
+        throw Error('Producto no encontrado');
+      }
+  
+      return res.status(200).json({ message: 'Producto eliminado exitosamente' });
+    } catch (error) {
+      return res.status(500).send(error.message);
+    }
+  };
+  
 
 export {
     postProduct,
@@ -284,5 +300,6 @@ export {
     updateProduct,
     postReview,
     changeActivation,
-    getOffers
+    getOffers,
+    deleteProduct,
 }
