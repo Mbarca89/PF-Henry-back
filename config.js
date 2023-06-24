@@ -16,3 +16,7 @@ export const CALLBACK_URL = process.env.CALLBACK_URL
 //export const PORT = 4000
 export const HOST = process.env.HOST
 export const MERCADO_PAGO_API_KEY = process.env.MERCADO_PAGO_API_TOKEN
+
+//NodeMailer
+
+export const MAIL_PASSWORD = process.env.MAIL_PASSWORD

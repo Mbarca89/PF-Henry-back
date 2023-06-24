@@ -1,5 +1,7 @@
 import User from "../models/User.js";
 import Cart from "../models/Cart.js";
+import transporter from "../libs/nodemailer.js";
+import { HOST } from "../../config.js";
 
 const createUser = async (req, res) => {
     try {
@@ -12,12 +14,12 @@ const createUser = async (req, res) => {
         if (!province) throw Error('La provincia no puede estar vacia')
         if (!postalCode) throw Error('El código postal no puede estar vacío')
 
-        if(role === 'seller'){
-            if(!commerceName) throw Error ('El nombre de la tienda es obligatorio')
-            if(!phone) throw Error ('El número de teléfono es obligatorio')
+        if (role === 'seller') {
+            if (!commerceName) throw Error('El nombre de la tienda es obligatorio')
+            if (!phone) throw Error('El número de teléfono es obligatorio')
         }
 
-        const newUser = new User({ name, email, password, address, city, province, postalCode, role, phone, commerceName })
+        const newUser = new User({ name, email, password, address, city, province, postalCode, role, phone, commerceName, activationToken: Math.random().toString(36).substring(2) })
         await newUser.save()
 
         const newCart = new Cart({ user: newUser._id })
@@ -26,13 +28,20 @@ const createUser = async (req, res) => {
         newUser.cart = newCart._id
         newUser.save()
 
+        const mailOptions = {
+            from: 'naturessence23@gmail.com',
+            to: newUser.email,
+            subject: 'Activa tu cuenta',
+            text: `Hola, gracias por registrarte en NaturEssence. Haz clic en el siguiente enlace para activar tu cuenta: ${HOST}/users/activate/${newUser.activationToken}`,
+        };
+
+        await transporter.sendMail(mailOptions)
+
         return res.status(201).json({ newUser, newCart })
 
     } catch (error) {
         if (error.code === 11000) {
-            if (error.keyPattern.name)
-                return res.status(400).send(`Ya existe un usuario con el nombre ${error.keyValue.name}`)
-            else return res.status(400).send(`Ya existe un usuario registrado con el mail ${error.keyValue.email}`)
+            return res.status(400).send(error.message)
         }
         else return res.status(400).send(error.message)
     }
@@ -52,7 +61,7 @@ const getUsers = async (req, res) => {
 
 const getSellers = async (req, res) => {
     try {
-        const users = await User.find({role: 'seller'});
+        const users = await User.find({ role: 'seller' });
         if (!users) {
             throw Error('Error al obtener vendedores');
         }
@@ -62,4 +71,20 @@ const getSellers = async (req, res) => {
     }
 };
 
-export { createUser, getUsers, getSellers }
+const activateUser = async (req,res) => {
+    try {
+        const {token} = req.params
+
+        const user = await User.findOne({ activationToken: token });
+
+        if(!user) throw Error ('Ha ocurrido un problema. El usuario no existe o has seguido un enlace no válido')
+        if(user.active) throw Error ('Tu cuenta ya esta activada, el enlace ya no es valido.')
+        user.active = true
+        await user.save()
+        return res.status(200).send('Tu cuenta esta activada! Ahora puedes iniciar sesión')
+    } catch (error) {
+        return res.status(400).send(error.message)
+    }
+}
+
+export { createUser, getUsers, getSellers, activateUser }
