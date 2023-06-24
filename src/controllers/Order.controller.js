@@ -8,6 +8,7 @@ const postOrder = async (req, res) => {
     const productList = products.map((product) => {
       return {
         itemName: product.product.name,
+        itemId: product.product.id,
         unityPrice: product.product.price,
         quantity: product.quantity,
         total: product.product.price * product.quantity,

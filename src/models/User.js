@@ -6,7 +6,7 @@ const userSchema = new Schema({
   name: {
     type: String,
     required: true,
-    unique: true
+    unique: false
   },
   email: {
     type: String,
@@ -55,14 +55,18 @@ const userSchema = new Schema({
       type: Schema.Types.ObjectId,
       ref: 'Product'
     },
-    price: {
-      type: Number,
-    },
     reviewed: {
       type: Boolean,
       default: false
     }
-  }]
+  }],
+  active:{
+    type: Boolean,
+    default: false
+  },
+  activationToken:{
+    type: String
+  }
 }, { timestamps: false });
 
 userSchema.set('toJSON', {
