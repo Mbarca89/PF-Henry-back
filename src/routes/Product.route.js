@@ -23,7 +23,7 @@ productRoutes.get('/detail/:id', getProductById)
 productRoutes.get('/:userId', getFromSeller)
 productRoutes.put('/changeactivation/:productId', changeActivation)
 productRoutes.put("/", updateProduct);
-productRoutes.delete('/products/:id',deleteProduct);
+productRoutes.delete('/:id',deleteProduct);
 
 
 
