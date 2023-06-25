@@ -1,11 +1,16 @@
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
+import { FRONT_HOST } from "../../config.js";
 
 const googleLogin = async (req, res) => {
   try {
     const googleUser = req.user
     if (!googleUser[0]?.name) {
-      return res.redirect('http://localhost:5173/')
+      const name = `${googleUser.googleName} ${googleUser.googleLastName}`
+      res.cookie('email', googleUser.googleEmail);
+      res.cookie('name', name)
+      console.log(FRONT_HOST)
+      return res.redirect(`${FRONT_HOST}/login`)
     }
     if (googleUser[0]?.name) {
       jwt.sign({ googleUser }, "secretKey", (err, token) => {

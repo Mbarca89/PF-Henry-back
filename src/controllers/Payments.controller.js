@@ -2,7 +2,7 @@ import mercadopago from "mercadopago";
 import Order from "../models/Order.js";
 import User from "../models/User.js";
 import Product from '../models/Product.js'
-import { HOST,MERCADO_PAGO_API_KEY } from "../../config.js";
+import { FRONT_HOST,MERCADO_PAGO_API_KEY } from "../../config.js";
 
 export const createOrder = async  (req, res)=> {
     const {productList, orderId} = req.body
@@ -69,11 +69,15 @@ export const success = async (req,res)=> {
             await foundProduct.save()
         }
 
-        return res.redirect(`${HOST}/products`)
+        return res.redirect(`${FRONT_HOST}/success`)
 
     } catch (error) {
         return res.status(400).send(error.message)
     }
+}
+
+export const failure = async (req,res)=> {
+    return res.redirect(`${FRONT_HOST}/failure`)
 }
 
 
