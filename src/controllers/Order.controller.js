@@ -27,17 +27,17 @@ const postOrder = async (req, res) => {
 
     res.status(201).json(newOrder);
   } catch (error) {
-    res.status(400).json({ error: "Error postOrder", message: error.message });
+    res.status(400).send(error.message);
   }
 };
 
 const getOrder = async (req, res) => {
   try {
     const { orderId } = req.params
-    if (!orderId) throw Error('Se necesita el ID de la orden')
+    if (!orderId) throw Error('Se necesita el ID de la orden.')
 
     const order = await Order.findById(orderId)
-    if (!order) throw Error('Orden no encontrada')
+    if (!order) throw Error('Orden no encontrada!')
 
     return res.status(200).json(order)
   } catch (error) {
@@ -48,10 +48,10 @@ const getOrder = async (req, res) => {
 const getUserOrders = async (req, res) => {
   try {
     const { userId } = req.params
-    if (!userId) throw Error('Falta la ID del usuario')
+    if (!userId) throw Error('Falta la ID del usuario!')
 
     const orders = await Order.find({ user: userId })
-    if (!orders) throw Error('Error al obtener ordenes')
+    if (!orders) throw Error('Error al obtener ordenes!')
 
     return res.status(200).json(orders)
   } catch (error) {
