@@ -50,10 +50,10 @@ export const success = async (req,res)=> {
     try {
         const {orderId} = req.params
         const order = await Order.findById(orderId)
-        if(!order) throw Error ('Orden no encontrada')
+        if(!order) throw Error ('Orden no encontrada!')
 
         const user = await User.findById(order.user)
-        if(!user) throw Error ('Usuario no encontrado')
+        if(!user) throw Error ('Usuario no encontrado!')
 
         const purchasedProducts = order.productList.map((product) => ({
             product: product.itemId
@@ -64,7 +64,7 @@ export const success = async (req,res)=> {
 
         for (const product of order.productList) {
             const foundProduct = await Product.findById(product.itemId)
-            if(!foundProduct) throw Error ('Producto no encontrado')
+            if(!foundProduct) throw Error ('Producto no encontrado!')
             foundProduct.stock -= Number(product.quantity)
             await foundProduct.save()
         }

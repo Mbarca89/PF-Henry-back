@@ -6,14 +6,11 @@ const postCategory = async (req, res) => {
 
     const newCategory = await Category.create({
       categoryName,
-      product,
     });
 
-    res.status(201).json(newCategory);
+    res.status(201).send('Categoría creada correctamente!');
   } catch (error) {
-    res
-      .status(400)
-      .json({ error: "Error postCategory", message: error.message });
+    res.status(400).send(error.message)
   }
 };
 
@@ -21,7 +18,7 @@ const getAllCategories = async (req, res) => {
   try {
     const categories = await Category.find();
     if (!categories) {
-      throw Error("Error al obtener categorias");
+      throw Error("Error al obtener categorias!");
     }
     return res.status(200).json(categories);
   } catch (error) {
@@ -34,7 +31,7 @@ const getCategoryById = async (req, res) => {
     const { id } = req.params;
     const category = await Category.findById(id);
     if (!category) {
-      throw Error("Categoría no encontrada");
+      throw Error("Categoría no encontrada!");
     }
     return res.status(200).json(category);
   } catch (error) {
@@ -53,7 +50,7 @@ const updateCategory = async (req, res) => {
     );
 
     if (!updatedCategory) {
-      throw Error("Categoría no encontrada");
+      throw Error("Categoría no encontrada!");
     }
 
     return res.status(200).json(updatedCategory);
@@ -68,12 +65,12 @@ const deleteCategory = async (req, res) => {
     const deletedCategory = await Category.findByIdAndDelete(id);
 
     if (!deletedCategory) {
-      throw Error("Categoría no encontrada");
+      throw Error("Categoría no encontrada!");
     }
 
     return res
       .status(200)
-      .json({ message: "Categoría eliminada correctamente" });
+      .json({ message: "Categoría eliminada correctamente." });
   } catch (error) {
     return res.status(500).send(error.message);
   }

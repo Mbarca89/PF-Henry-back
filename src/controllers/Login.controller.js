@@ -15,7 +15,7 @@ const googleLogin = async (req, res) => {
     if (googleUser[0]?.name) {
       jwt.sign({ googleUser }, "secretKey", (err, token) => {
         if (err) {
-          throw new Error("Failed to create JWT");
+          throw Error("Error al crear el token.");
         }
         res.cookie('token', token);
         res.cookie('user', JSON.stringify({
@@ -35,7 +35,7 @@ const googleLogin = async (req, res) => {
       })
     }
   } catch (error) {
-    return res.status(400).send(error.message)
+    return res.status(403).send(error.message)
     
   }
 
@@ -47,12 +47,12 @@ const Login = async (req, res) => {
 
     const user = await User.findOne({ email, password });
     if (!user) {
-      throw new Error("Invalid email or password");
+      throw Error("Email o contraseña incorrecta");
     }
 
     jwt.sign({ user }, "secretKey", (err, token) => {
       if (err) {
-        throw new Error("Failed to create JWT");
+        throw Error("Error al crear el token");
       }
 
       return res.json({

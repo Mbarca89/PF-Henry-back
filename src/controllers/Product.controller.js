@@ -6,13 +6,13 @@ import fs from "fs-extra";
 
 const postProduct = async (req, res) => {
   try {
-    if (!req.body.data) throw Error("No hay datos");
+    if (!req.body.data) throw Error("No hay datos!");
     const { name, price, description, stock, userId, category, freeShipping } =
       JSON.parse(req.body.data);
-    if (!name) throw Error("El nombre no puede estar vacio");
-    if (!price) throw Error("El precio no puede estar vacio");
-    if (!description) throw Error("El description no puede estar vacio");
-    if (!stock) throw Error("El stock no puede estar vacio");
+    if (!name) throw Error("El nombre no puede estar vacio!");
+    if (!price) throw Error("El precio no puede estar vacio!");
+    if (!description) throw Error("La descripción no puede estar vacia!");
+    if (!stock) throw Error("El stock no puede estar vacio!");
     const photos = req.files?.photos;
     let uploadPhotos = [];
     if (photos) {
@@ -48,7 +48,7 @@ const postProduct = async (req, res) => {
       freeShipping,
     });
     const findCategory = await Category.findOne({ _id: category });
-    if (!findCategory) throw Error("Categoría no encontrada");
+    if (!findCategory) throw Error("Categoría no encontrada!");
     findCategory.products.push(newProduct._id);
     await newProduct.save();
     await findCategory.save();
@@ -63,7 +63,7 @@ const getProductById = async (req, res) => {
     const { id } = req.params;
     const product = await Product.findById(id);
     if (!product) {
-      throw Error("Producto no encontrado");
+      throw Error("Producto no encontrado!");
     }
     return res.status(200).json(product);
   } catch (error) {
@@ -76,7 +76,7 @@ const getFromSeller = async (req, res) => {
     const { userId } = req.params;
     const products = await Product.find({ seller: userId });
     if (!products) {
-      throw Error("Producto no encontrado");
+      throw Error("Producto no encontrado!");
     }
     return res.status(200).json(products);
   } catch (error) {
@@ -208,7 +208,7 @@ const updateProduct = async (req, res) => {
     );
 
     if (!updatedProduct) {
-      throw Error("Producto no encontrado");
+      throw Error("Producto no encontrado!");
     }
 
     return res.status(200).json(updatedProduct);
@@ -240,10 +240,10 @@ const postReview = async (req, res) => {
     if (!product) throw Error("Producto no encontrado!");
     const user = await User.findById(userId);
     if (!user) throw Error("Usuario no encontrado!");
-    if (!rating) throw Error("No se recibio ninguna puntuación");
+    if (!rating) throw Error("No se recibio ninguna puntuación!");
     if (rating < 1 || rating > 5)
-      throw Error("la puntuación debe ser entre 1 y 5");
-    if (!review) throw Error("La reseña está vacía");
+      throw Error("la puntuación debe ser entre 1 y 5!");
+    if (!review) throw Error("La reseña no puede estar vacía!");
 
     const purchasedProduct = user.purchasedProducts.find(
       (purchased) => purchased.productId.toString() === productId
@@ -268,7 +268,7 @@ const postReview = async (req, res) => {
     purchasedProduct.reviewed = true;
     await product.save();
     await user.save();
-    return res.status(200).send("Reseña publicada correctamente");
+    return res.status(200).send("Reseña publicada correctamente!");
   } catch (error) {
     return res.status(400).send(error.message);
   }
@@ -293,7 +293,7 @@ const getOffers = async (req, res) => {
     ]);
 
     if (!products || products.length === 0) {
-      throw Error("No hay productos en oferta");
+      throw Error("No hay productos en oferta!");
     }
 
     return res.status(200).json(products);
@@ -308,10 +308,10 @@ const deleteProduct = async (req, res) => {
     const deletedProduct = await Product.findByIdAndDelete(id);
 
     if (!deletedProduct) {
-      throw Error("Producto no encontrado");
+      throw Error("Producto no encontrado!");
     }
 
-    return res.status(200).json({ message: "Producto eliminado exitosamente" });
+    return res.status(200).json({ message: "Producto eliminado exitosamente!" });
   } catch (error) {
     return res.status(500).send(error.message);
   }

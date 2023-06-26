@@ -6,17 +6,17 @@ import { HOST } from "../../config.js";
 const createUser = async (req, res) => {
     try {
         const { name, email, password, address, city, province, postalCode, role, phone, commerceName } = req.body
-        if (!name) throw Error('El nombre no puede estar vacio')
-        if (!email) throw Error('El Email no puede estar vacio')
-        if (!password) throw Error('La contraseña no puede estar vacia')
-        if (!address) throw Error('La dirección no puede estar vacia')
-        if (!city) throw Error('La ciudad no puede estar vacia')
-        if (!province) throw Error('La provincia no puede estar vacia')
-        if (!postalCode) throw Error('El código postal no puede estar vacío')
+        if (!name) throw Error('El nombre no puede estar vacio!')
+        if (!email) throw Error('El Email no puede estar vacio!')
+        if (!password) throw Error('La contraseña no puede estar vacia!')
+        if (!address) throw Error('La dirección no puede estar vacia!')
+        if (!city) throw Error('La ciudad no puede estar vacia!')
+        if (!province) throw Error('La provincia no puede estar vacia!')
+        if (!postalCode) throw Error('El código postal no puede estar vacío!')
 
         if (role === 'seller') {
-            if (!commerceName) throw Error('El nombre de la tienda es obligatorio')
-            if (!phone) throw Error('El número de teléfono es obligatorio')
+            if (!commerceName) throw Error('El nombre de la tienda es obligatorio!')
+            if (!phone) throw Error('El número de teléfono es obligatorio!')
         }
 
         const newUser = new User({ name, email, password, address, city, province, postalCode, role, phone, commerceName, activationToken: Math.random().toString(36).substring(2) })
@@ -51,7 +51,7 @@ const getUsers = async (req, res) => {
     try {
         const users = await User.find();
         if (!users) {
-            throw Error('Error al obtener usuarios');
+            throw Error('Error al obtener usuarios!');
         }
         return res.status(200).json(users);
     } catch (error) {
@@ -63,7 +63,7 @@ const getSellers = async (req, res) => {
     try {
         const users = await User.find({ role: 'seller' });
         if (!users) {
-            throw Error('Error al obtener vendedores');
+            throw Error('Error al obtener vendedores!');
         }
         return res.status(200).json(users);
     } catch (error) {
