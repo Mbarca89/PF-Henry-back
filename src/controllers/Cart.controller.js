@@ -52,7 +52,7 @@ const removeProduct = async (req, res) => {
 
         await cart.save()
 
-        return res.status(200).json({ message: 'Producto eliminado del carrito.' });
+        return res.status(200).send('Producto eliminado del carrito.');
     } catch (error) {
         return res.status(400).send(error.message)
     }

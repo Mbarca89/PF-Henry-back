@@ -31,7 +31,7 @@ const googleLogin = async (req, res) => {
           role: googleUser[0].role,
           cart: googleUser[0].cart,
         }))
-       return res.redirect('http://localhost:5173/products')
+       return res.redirect(`${FRONT_HOST}/products`)
       })
     }
   } catch (error) {
