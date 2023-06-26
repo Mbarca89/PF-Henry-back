@@ -2,7 +2,7 @@ import mercadopago from "mercadopago";
 import Order from "../models/Order.js";
 import User from "../models/User.js";
 import Product from '../models/Product.js'
-import { FRONT_HOST,MERCADO_PAGO_API_KEY } from "../../config.js";
+import { FRONT_HOST,MERCADO_PAGO_API_KEY, HOST } from "../../config.js";
 
 export const createOrder = async  (req, res)=> {
     const {productList, orderId} = req.body
