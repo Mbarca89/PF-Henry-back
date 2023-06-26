@@ -87,4 +87,21 @@ const activateUser = async (req,res) => {
     }
 }
 
-export { createUser, getUsers, getSellers, activateUser }
+const getPurchasedProducts = async (req,res) => {
+    try {
+        const {userId} = req.body
+        if(!userId) throw Error ('Falta la id de usuario!')
+
+        const user = await User.findById(userId).populate({
+            path:'purchasedProducts.product',
+            select: 'name photos price description'
+        })
+        if(!user) throw Error ('Usuario no encontrado!')
+
+        return res.status(200).json(user.purchasedProducts)
+    } catch (error) {
+        return res.status(400).send(error.message)
+    }
+}
+
+export { createUser, getUsers, getSellers, activateUser, getPurchasedProducts }
