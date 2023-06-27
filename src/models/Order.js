@@ -17,6 +17,10 @@ const orderSchema = new Schema(
       type: Date,
       default: Date.now,
     },
+    status: {
+      type: String,
+      default: 'cancelled'
+    }
   },
   { timestamps: false }
 );

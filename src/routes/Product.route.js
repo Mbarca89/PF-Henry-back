@@ -9,6 +9,7 @@ import {
     changeActivation,
     getOffers,
     deleteProduct,
+    getFeatured
 } from '../controllers/Product.controller.js'
 
 
@@ -19,6 +20,7 @@ productRoutes.post('/post', postProduct)
 productRoutes.post('/postreview', postReview)
 productRoutes.post('/', getAllProducts)
 productRoutes.get('/offers', getOffers)
+productRoutes.get('/featured', getFeatured)
 productRoutes.get('/detail/:id', getProductById)
 productRoutes.get('/:userId', getFromSeller)
 productRoutes.put('/changeactivation/:productId', changeActivation)
