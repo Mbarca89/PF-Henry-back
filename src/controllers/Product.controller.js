@@ -290,6 +290,7 @@ const getOffers = async (req, res) => {
         },
       },
       { $sort: { ratingAverage: -1 } },
+      { $limit: 10 }
     ]);
 
     if (!products || products.length === 0) {
@@ -301,6 +302,35 @@ const getOffers = async (req, res) => {
     return res.status(500).send(error.message);
   }
 };
+
+const getFeatured = async (req, res) => {
+  try {
+    let products = await Product.aggregate([
+      {
+        $addFields: {
+          ratingAverage: {
+            $cond: {
+              if: { $eq: [{ $avg: "$rating" }, null] },
+              then: 1,
+              else: { $avg: "$rating" },
+            },
+          },
+        },
+      },
+      { $sort: { ratingAverage: -1 } },
+      { $limit: 1 } // Limitar la respuesta a 10 productos
+    ]);
+
+    if (!products || products.length === 0) {
+      throw Error("No hay productos en oferta!");
+    }
+
+    return res.status(200).json(products[0]);
+  } catch (error) {
+    return res.status(500).send(error.message);
+  }
+}
+
 const deleteProduct = async (req, res) => {
   try {
     const { id } = req.params;
@@ -327,4 +357,5 @@ export {
   changeActivation,
   getOffers,
   deleteProduct,
+  getFeatured
 };
