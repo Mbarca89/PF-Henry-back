@@ -104,4 +104,36 @@ const getPurchasedProducts = async (req,res) => {
     }
 }
 
-export { createUser, getUsers, getSellers, activateUser, getPurchasedProducts }
+const getClients = async (req,res) => {
+    try {
+        const {userId} = req.body
+        const user = await User.findById(userId).populate('clients.product', 'name price hasDiscount discount').populate('clients.user', 'name email address city province postalCode')
+        if(!user) throw Error ('Usuario no encontrado!')
+        const clients = user.clients.map(client => {
+            const { name, price, hasDiscount, discount } = client.product;
+            return {
+                user:{
+                    name: client.user.name,
+                    email: client.user.email,
+                    address: client.user.address,
+                    city: client.user.city,
+                    province: client.user.province,
+                    postalCode: client.user.postalCode,
+                },
+                product:{
+                    productName: name,
+                    productPrice: price,
+                    productHasDiscount: hasDiscount,
+                    productDiscount: discount
+                },
+                quantity: client.quantity
+            };
+        });
+
+        return res.status(200).json(clients)
+    } catch (error) {
+        return res.status(400).send(error.message)
+    }
+}
+
+export { createUser, getUsers, getSellers, activateUser, getPurchasedProducts, getClients }

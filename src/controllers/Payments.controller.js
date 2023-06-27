@@ -52,7 +52,7 @@ export const success = async (req, res) => {
         const { orderId } = req.params
         const order = await Order.findById(orderId)
         if (!order) throw Error('Orden no encontrada!')
-
+        console.log(order.user)
         const user = await User.findById(order.user)
         if (!user) throw Error('Usuario no encontrado!')
 
@@ -67,7 +67,18 @@ export const success = async (req, res) => {
             const foundProduct = await Product.findById(product.itemId)
             if (!foundProduct) throw Error('Producto no encontrado!')
             foundProduct.stock -= Number(product.quantity)
+
+            const seller = await User.findById(foundProduct.seller)
+            if(!seller) throw Error ('Vendedor no encontrado!')
+            seller.clients.push({
+                product:foundProduct._id,
+                quantity:product.quantity,
+                user: order.user
+            })
+            
+            console.log(seller.clients)
             await foundProduct.save()
+            await seller.save()
         }
 
         let mailBody = '<h1>Gracias por tu compra!</h1><p>Tu pedido ha sido recibido y se estará procesando en un plazo de 24 a 48 horas.</p><h2>Aqui tienes un detalle de tus compras:</h2><table><tr><th>Nombre</th><th>Precio Unitario</th><th>Cantidad</th><th>Precio Total</th></tr>'

@@ -60,6 +60,17 @@ const userSchema = new Schema({
       default: false
     }
   }],
+  clients: [{
+    product: {
+      type: Schema.Types.ObjectId,
+      ref: 'Product'
+    },
+    quantity: {type: Number},
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+  }],
   active:{
     type: Boolean,
     default: false
