@@ -246,7 +246,7 @@ const postReview = async (req, res) => {
     if (!review) throw Error("La reseña no puede estar vacía!");
 
     const purchasedProduct = user.purchasedProducts.find(
-      (purchased) => purchased.productId.toString() === productId
+      (purchased) => purchased.product.toString() === productId
     );
     if (!purchasedProduct) {
       throw new Error("El usuario no ha comprado este producto.");
