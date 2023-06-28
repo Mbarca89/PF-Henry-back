@@ -3,6 +3,7 @@ import Product from "../models/Product.js";
 import Category from "../models/Category.js";
 import User from "../models/User.js";
 import fs from "fs-extra";
+import mongoose from "mongoose";
 
 const postProduct = async (req, res) => {
   try {
@@ -84,7 +85,7 @@ const getFromSeller = async (req, res) => {
   }
 };
 
-const getAllProducts = async (req, res) => {
+const getProducts = async (req, res) => {
   const productsPerPage = 12;
   const { page } = req.query;
 
@@ -134,9 +135,11 @@ const getAllProducts = async (req, res) => {
 
   if (freeShipping) filters.freeShipping = freeShipping;
   if (hasDiscount) filters.hasDiscount = hasDiscount;
-  if (category) filters.category = category;
+  if (category) filters.category = mongoose.Types.ObjectId(category);
   if (minPrice) filters.price.$gte = Number(minPrice);
   if (maxPrice) filters.price.$lte = Number(maxPrice);
+
+  console.log(filters)
 
   try {
     const products = await Product.aggregate([
@@ -246,7 +249,7 @@ const postReview = async (req, res) => {
     if (!review) throw Error("La reseña no puede estar vacía!");
 
     const purchasedProduct = user.purchasedProducts.find(
-      (purchased) => purchased.productId.toString() === productId
+      (purchased) => purchased.product.toString() === productId
     );
     if (!purchasedProduct) {
       throw new Error("El usuario no ha comprado este producto.");
@@ -318,7 +321,7 @@ const getFeatured = async (req, res) => {
         },
       },
       { $sort: { ratingAverage: -1 } },
-      { $limit: 1 } // Limitar la respuesta a 10 productos
+      { $limit: 1 }
     ]);
 
     if (!products || products.length === 0) {
@@ -347,15 +350,27 @@ const deleteProduct = async (req, res) => {
   }
 };
 
+const getAllProdcuts = async (req,res) => {
+  try {
+    const products = await Product.find().populate('seller', 'name')
+    if (!products) throw Error ('Error al obtener productos')
+
+    return res.status(200).json(products)
+  } catch (error) {
+    return res.status(200).send(error.message)
+  }
+}
+
 export {
   postProduct,
   getProductById,
-  getAllProducts,
+  getProducts,
   getFromSeller,
   updateProduct,
   postReview,
   changeActivation,
   getOffers,
   deleteProduct,
-  getFeatured
+  getFeatured,
+  getAllProdcuts
 };
