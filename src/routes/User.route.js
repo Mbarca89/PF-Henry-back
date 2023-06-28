@@ -11,7 +11,7 @@ userRoutes.get('/', getUsers)
 userRoutes.get('/sellers', getSellers)
 userRoutes.get('/clients', getClients)
 userRoutes.get('/activate/:token', activateUser)
-userRoutes.get('/purchasedproducts', getPurchasedProducts)
+userRoutes.get('/purchasedproducts/:userId', getPurchasedProducts)
 userRoutes.put('/changeactivation/:userId', changeActivation)
 
 

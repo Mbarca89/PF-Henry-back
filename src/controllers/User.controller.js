@@ -89,7 +89,7 @@ const activateUser = async (req,res) => {
 
 const getPurchasedProducts = async (req,res) => {
     try {
-        const {userId} = req.body
+        const {userId} = req.params
         if(!userId) throw Error ('Falta la id de usuario!')
 
         const user = await User.findById(userId).populate({
