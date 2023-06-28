@@ -136,4 +136,21 @@ const getClients = async (req,res) => {
     }
 }
 
-export { createUser, getUsers, getSellers, activateUser, getPurchasedProducts, getClients }
+const changeActivation = async (req, res) => {
+    try {
+      const { active } = req.body;
+      const { userId } = req.params;
+      const user = await User.findById(userId);
+      if (!user) throw Error("Producto no encontrado!");
+      user.active = active;
+      await user.save();
+      if (active === false)
+        return res.status(200).send("Usuario desactivado correctamente");
+      else return res.status(200).send("Usuario activado correctamente");
+    } catch (error) {
+        console.log(error.message)
+      return res.status(400).send(error.message);
+    }
+  };
+
+export { createUser, getUsers, getSellers, activateUser, getPurchasedProducts, getClients, changeActivation }

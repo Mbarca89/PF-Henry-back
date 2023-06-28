@@ -84,7 +84,7 @@ const getFromSeller = async (req, res) => {
   }
 };
 
-const getAllProducts = async (req, res) => {
+const getProducts = async (req, res) => {
   const productsPerPage = 12;
   const { page } = req.query;
 
@@ -318,7 +318,7 @@ const getFeatured = async (req, res) => {
         },
       },
       { $sort: { ratingAverage: -1 } },
-      { $limit: 1 } // Limitar la respuesta a 10 productos
+      { $limit: 1 }
     ]);
 
     if (!products || products.length === 0) {
@@ -347,15 +347,27 @@ const deleteProduct = async (req, res) => {
   }
 };
 
+const getAllProdcuts = async (req,res) => {
+  try {
+    const products = await Product.find().populate('seller', 'name')
+    if (!products) throw Error ('Error al obtener productos')
+
+    return res.status(200).json(products)
+  } catch (error) {
+    return res.status(200).send(error.message)
+  }
+}
+
 export {
   postProduct,
   getProductById,
-  getAllProducts,
+  getProducts,
   getFromSeller,
   updateProduct,
   postReview,
   changeActivation,
   getOffers,
   deleteProduct,
-  getFeatured
+  getFeatured,
+  getAllProdcuts
 };

@@ -2,14 +2,15 @@ import Router from 'express';
 import {
     postProduct,
     getProductById,
-    getAllProducts,
+    getProducts,
     getFromSeller,
     updateProduct,
     postReview,
     changeActivation,
     getOffers,
     deleteProduct,
-    getFeatured
+    getFeatured,
+    getAllProdcuts
 } from '../controllers/Product.controller.js'
 
 
@@ -18,7 +19,8 @@ const productRoutes = Router();
 
 productRoutes.post('/post', postProduct)
 productRoutes.post('/postreview', postReview)
-productRoutes.post('/', getAllProducts)
+productRoutes.post('/', getProducts)
+productRoutes.get('/all', getAllProdcuts)
 productRoutes.get('/offers', getOffers)
 productRoutes.get('/featured', getFeatured)
 productRoutes.get('/detail/:id', getProductById)
