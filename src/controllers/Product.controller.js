@@ -3,6 +3,7 @@ import Product from "../models/Product.js";
 import Category from "../models/Category.js";
 import User from "../models/User.js";
 import fs from "fs-extra";
+import mongoose from "mongoose";
 
 const postProduct = async (req, res) => {
   try {
@@ -134,9 +135,11 @@ const getProducts = async (req, res) => {
 
   if (freeShipping) filters.freeShipping = freeShipping;
   if (hasDiscount) filters.hasDiscount = hasDiscount;
-  if (category) filters.category = category;
+  if (category) filters.category = mongoose.Types.ObjectId(category);
   if (minPrice) filters.price.$gte = Number(minPrice);
   if (maxPrice) filters.price.$lte = Number(maxPrice);
+
+  console.log(filters)
 
   try {
     const products = await Product.aggregate([
