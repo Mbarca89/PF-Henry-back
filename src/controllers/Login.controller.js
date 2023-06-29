@@ -31,6 +31,7 @@ const googleLogin = async (req, res) => {
           commerceName: googleUser[0].commerceName,
           role: googleUser[0].role,
           cart: googleUser[0].cart,
+          active:googleUser[0].active
         }))
         return res.redirect(`${FRONT_HOST}/products`)
       })
@@ -73,6 +74,7 @@ const Login = async (req, res) => {
           commerceName: user.commerceName,
           role: user.role,
           cart: user.cart,
+          active: user.active
         },
       });
     });

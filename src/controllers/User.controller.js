@@ -35,7 +35,7 @@ const createUser = async (req, res) => {
             from: 'naturessence23@gmail.com',
             to: newUser.email,
             subject: 'Activa tu cuenta',
-            text: `Hola, gracias por registrarte en NaturEssence. Haz clic en el siguiente enlace para activar tu cuenta: ${FRONT_HOST}/users/activate/${newUser.activationToken}`,
+            text: `Hola, gracias por registrarte en NaturEssence. Haz clic en el siguiente enlace para activar tu cuenta: ${FRONT_HOST}/activation/${newUser.activationToken}`,
         };
 
         await transporter.sendMail(mailOptions)
@@ -85,6 +85,37 @@ const activateUser = async (req, res) => {
         user.active = true
         await user.save()
         return res.status(200).send('Tu cuenta esta activada! Ahora puedes iniciar sesión')
+    } catch (error) {
+        return res.status(400).send(error.message)
+    }
+}
+
+const resendActivation = async (req, res) => {
+    try {
+        console.log(req.body)
+        const { email } = req.body
+        if (!email) throw Error('El email es obligatorio!')
+
+        const user = await User.findOne({ email })
+        if (!user) throw Error('No existe un usuario con ese email')
+
+        if (user.active) throw Error('El usuario ya esta activado')
+
+        user.activationToken = Math.random().toString(36).substring(2)
+
+        await user.save()
+
+        const mailOptions = {
+            from: 'naturessence23@gmail.com',
+            to: user.email,
+            subject: 'Activa tu cuenta',
+            text: `Hola, gracias por registrarte en NaturEssence. Haz clic en el siguiente enlace para activar tu cuenta: ${FRONT_HOST}/activation/${user.activationToken}`,
+        };
+
+        await transporter.sendMail(mailOptions)
+
+        return res.status(200).send('se ha enviado un correo electrónico!')
+
     } catch (error) {
         return res.status(400).send(error.message)
     }
@@ -186,12 +217,12 @@ const forgotPassword = async (req, res) => {
 const resetPassword = async (req, res) => {
     try {
         const { passwordToken } = req.params
-        if(!passwordToken) throw Error ('Token inválido')
+        if (!passwordToken) throw Error('Token inválido')
         const { password } = req.body
-        if(!password) throw Error ('La contraseña es obligatoria!')
+        if (!password) throw Error('La contraseña es obligatoria!')
 
-        const user = await User.findOne({passwordToken})
-        if(!user) throw Error ('El usuario no existe o has seguido un enlace no válido.')
+        const user = await User.findOne({ passwordToken })
+        if (!user) throw Error('El usuario no existe o has seguido un enlace no válido.')
 
         const hashedPass = await bcrypt.hash(password, 10)
 
@@ -206,4 +237,4 @@ const resetPassword = async (req, res) => {
     }
 }
 
-export { createUser, getUsers, getSellers, activateUser, getPurchasedProducts, getClients, changeActivation, forgotPassword, resetPassword }
+export { createUser, getUsers, getSellers, activateUser, resendActivation, getPurchasedProducts, getClients, changeActivation, forgotPassword, resetPassword }

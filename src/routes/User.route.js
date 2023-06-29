@@ -4,6 +4,7 @@ import {
     getUsers,
     getSellers,
     activateUser,
+    resendActivation,
     getPurchasedProducts,
     getClients,
     changeActivation,
@@ -20,6 +21,7 @@ userRoutes.get('/clients', getClients)
 userRoutes.get('/activate/:token', activateUser)
 userRoutes.get('/purchasedproducts/:userId', getPurchasedProducts)
 userRoutes.put('/changeactivation/:userId', changeActivation)
+userRoutes.put('/resendactivation', resendActivation)
 userRoutes.put('/forgotpassword', forgotPassword)
 userRoutes.put('/resetpassword/:passwordToken', resetPassword)
 
