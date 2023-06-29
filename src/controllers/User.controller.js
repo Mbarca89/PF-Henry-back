@@ -237,4 +237,49 @@ const resetPassword = async (req, res) => {
     }
 }
 
-export { createUser, getUsers, getSellers, activateUser, resendActivation, getPurchasedProducts, getClients, changeActivation, forgotPassword, resetPassword }
+const changePassword = async (req,res) => {
+    try {
+        const {password, newPassword, userId} = req.body
+        if(!password || !newPassword || !userId) throw Error ('Faltan datos')
+
+        const user = await User.findById(userId)
+        if(!user) throw Error ('Usuario no encontrado!')
+
+        const passwordMatch = await bcrypt.compare(password, user.password);
+        if (!passwordMatch) throw Error("Contraseña incorrecta")
+
+        const hashedPass = await bcrypt.hash(newPassword, 10)
+
+        user.password = hashedPass
+
+        await user.save()
+
+        return res.status(200).send('Contraseña actualizada con éxito!')
+    } catch (error) {
+        return res.status(400).send(error.message)
+    }
+}
+
+const updateUser = async (req,res) => {
+    try {
+        const {id, name, address, city, province, postalCode } = req.body
+        if(!id) throw Error ('Se necesita la ID del usuario.')
+        const user = await User.findByIdAndUpdate(id,
+            {
+                name,
+                address,
+                city,
+                province,
+                postalCode
+        },
+        {new:true}
+        )
+        if(!user) throw Error ('Usuario no encontrado!')
+
+        return res.status(200).send('Datos actualizados con éxito')
+    } catch (error) {
+        return res.status(400).send(error.message)
+    }
+}
+
+export { createUser, getUsers, getSellers, activateUser, resendActivation, getPurchasedProducts, getClients, changeActivation, forgotPassword, resetPassword, changePassword, updateUser }
