@@ -240,6 +240,7 @@ const resetPassword = async (req, res) => {
 const changePassword = async (req,res) => {
     try {
         const {password, newPassword, userId} = req.body
+        if(!userId) throw Error('No hay id')
         if(!password || !newPassword || !userId) throw Error ('Faltan datos')
 
         const user = await User.findById(userId)
@@ -262,21 +263,25 @@ const changePassword = async (req,res) => {
 
 const updateUser = async (req,res) => {
     try {
-        const {id, name, address, city, province, postalCode } = req.body
+        const {id, name, address, city, province, postalCode, phone } = req.body
         if(!id) throw Error ('Se necesita la ID del usuario.')
+        
         const user = await User.findByIdAndUpdate(id,
             {
                 name,
                 address,
                 city,
                 province,
-                postalCode
+                postalCode,
+                phone
         },
         {new:true}
         )
         if(!user) throw Error ('Usuario no encontrado!')
 
-        return res.status(200).send('Datos actualizados con éxito')
+        await user.save()
+       
+        return res.status(200).json(user)
     } catch (error) {
         return res.status(400).send(error.message)
     }
