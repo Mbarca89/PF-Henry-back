@@ -77,6 +77,9 @@ const userSchema = new Schema({
   },
   activationToken:{
     type: String
+  },
+  passwordToken:{
+    type: String
   }
 }, { timestamps: false });
 

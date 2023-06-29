@@ -1,7 +1,8 @@
 import User from "../models/User.js";
 import Cart from "../models/Cart.js";
 import transporter from "../libs/nodemailer.js";
-import { HOST } from "../../config.js";
+import { FRONT_HOST } from "../../config.js";
+import bcrypt from "bcryptjs";
 
 const createUser = async (req, res) => {
     try {
@@ -19,7 +20,9 @@ const createUser = async (req, res) => {
             if (!phone) throw Error('El número de teléfono es obligatorio!')
         }
 
-        const newUser = new User({ name, email, password, address, city, province, postalCode, role, phone, commerceName, activationToken: Math.random().toString(36).substring(2) })
+        const hashedPass = await bcrypt.hash(password, 10)
+
+        const newUser = new User({ name, email, password: hashedPass, address, city, province, postalCode, role, phone, commerceName, activationToken: Math.random().toString(36).substring(2) })
         await newUser.save()
 
         const newCart = new Cart({ user: newUser._id })
@@ -32,7 +35,7 @@ const createUser = async (req, res) => {
             from: 'naturessence23@gmail.com',
             to: newUser.email,
             subject: 'Activa tu cuenta',
-            text: `Hola, gracias por registrarte en NaturEssence. Haz clic en el siguiente enlace para activar tu cuenta: ${HOST}/users/activate/${newUser.activationToken}`,
+            text: `Hola, gracias por registrarte en NaturEssence. Haz clic en el siguiente enlace para activar tu cuenta: ${FRONT_HOST}/users/activate/${newUser.activationToken}`,
         };
 
         await transporter.sendMail(mailOptions)
@@ -71,14 +74,14 @@ const getSellers = async (req, res) => {
     }
 };
 
-const activateUser = async (req,res) => {
+const activateUser = async (req, res) => {
     try {
-        const {token} = req.params
+        const { token } = req.params
 
         const user = await User.findOne({ activationToken: token });
 
-        if(!user) throw Error ('Ha ocurrido un problema. El usuario no existe o has seguido un enlace no válido')
-        if(user.active) throw Error ('Tu cuenta ya esta activada, el enlace ya no es valido.')
+        if (!user) throw Error('Ha ocurrido un problema. El usuario no existe o has seguido un enlace no válido')
+        if (user.active) throw Error('Tu cuenta ya esta activada, el enlace ya no es valido.')
         user.active = true
         await user.save()
         return res.status(200).send('Tu cuenta esta activada! Ahora puedes iniciar sesión')
@@ -87,16 +90,16 @@ const activateUser = async (req,res) => {
     }
 }
 
-const getPurchasedProducts = async (req,res) => {
+const getPurchasedProducts = async (req, res) => {
     try {
-        const {userId} = req.params
-        if(!userId) throw Error ('Falta la id de usuario!')
+        const { userId } = req.params
+        if (!userId) throw Error('Falta la id de usuario!')
 
         const user = await User.findById(userId).populate({
-            path:'purchasedProducts.product',
+            path: 'purchasedProducts.product',
             select: 'name photos price description'
         })
-        if(!user) throw Error ('Usuario no encontrado!')
+        if (!user) throw Error('Usuario no encontrado!')
 
         return res.status(200).json(user.purchasedProducts)
     } catch (error) {
@@ -104,15 +107,15 @@ const getPurchasedProducts = async (req,res) => {
     }
 }
 
-const getClients = async (req,res) => {
+const getClients = async (req, res) => {
     try {
-        const {userId} = req.body
+        const { userId } = req.body
         const user = await User.findById(userId).populate('clients.product', 'name price hasDiscount discount').populate('clients.user', 'name email address city province postalCode')
-        if(!user) throw Error ('Usuario no encontrado!')
+        if (!user) throw Error('Usuario no encontrado!')
         const clients = user.clients.map(client => {
             const { name, price, hasDiscount, discount } = client.product;
             return {
-                user:{
+                user: {
                     name: client.user.name,
                     email: client.user.email,
                     address: client.user.address,
@@ -120,7 +123,7 @@ const getClients = async (req,res) => {
                     province: client.user.province,
                     postalCode: client.user.postalCode,
                 },
-                product:{
+                product: {
                     productName: name,
                     productPrice: price,
                     productHasDiscount: hasDiscount,
@@ -138,19 +141,69 @@ const getClients = async (req,res) => {
 
 const changeActivation = async (req, res) => {
     try {
-      const { active } = req.body;
-      const { userId } = req.params;
-      const user = await User.findById(userId);
-      if (!user) throw Error("Producto no encontrado!");
-      user.active = active;
-      await user.save();
-      if (active === false)
-        return res.status(200).send("Usuario desactivado correctamente");
-      else return res.status(200).send("Usuario activado correctamente");
+        const { active } = req.body;
+        const { userId } = req.params;
+        const user = await User.findById(userId);
+        if (!user) throw Error("Producto no encontrado!");
+        user.active = active;
+        await user.save();
+        if (active === false)
+            return res.status(200).send("Usuario desactivado correctamente");
+        else return res.status(200).send("Usuario activado correctamente");
     } catch (error) {
         console.log(error.message)
-      return res.status(400).send(error.message);
+        return res.status(400).send(error.message);
     }
-  };
+};
 
-export { createUser, getUsers, getSellers, activateUser, getPurchasedProducts, getClients, changeActivation }
+const forgotPassword = async (req, res) => {
+    try {
+        const { email } = req.body
+        if (!email) throw Error('El email es obligatorio!')
+
+        const user = await User.findOne({ email })
+        if (!user) throw Error('Usuario no encontrado!')
+
+        user.passwordToken = Math.random().toString(36).substring(2)
+
+        await user.save()
+
+        const mailOptions = {
+            from: 'naturessence23@gmail.com',
+            to: user.email,
+            subject: 'Resetear contraseña',
+            text: `Hola, estás recibiendo este correo porque has solicitado resetear tu contraseña. Sigue el siguiente enlace para conrinuar: ${FRONT_HOST}/resetpassword/${user.passwordToken}. Si no has sido tu puedes ignorar este mensaje.`,
+        };
+
+        await transporter.sendMail(mailOptions)
+
+        return res.status(200).send('Se ha enviado un correo electrónico!')
+    } catch (error) {
+        return res.status(400).send(error.message)
+    }
+}
+
+const resetPassword = async (req, res) => {
+    try {
+        const { passwordToken } = req.params
+        if(!passwordToken) throw Error ('Token inválido')
+        const { password } = req.body
+        if(!password) throw Error ('La contraseña es obligatoria!')
+
+        const user = await User.findOne({passwordToken})
+        if(!user) throw Error ('El usuario no existe o has seguido un enlace no válido.')
+
+        const hashedPass = await bcrypt.hash(password, 10)
+
+        user.password = hashedPass
+        user.passwordToken = ''
+        await user.save()
+
+        return res.status(200).send('Contraseña actualizada con éxito!')
+
+    } catch (error) {
+        return res.status(400).send(error.message)
+    }
+}
+
+export { createUser, getUsers, getSellers, activateUser, getPurchasedProducts, getClients, changeActivation, forgotPassword, resetPassword }
