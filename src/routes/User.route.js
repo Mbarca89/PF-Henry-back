@@ -9,7 +9,9 @@ import {
     getClients,
     changeActivation,
     forgotPassword,
-    resetPassword
+    resetPassword,
+    changePassword,
+    updateUser
 } from '../controllers/User.controller.js';
 
 const userRoutes = Router();
@@ -24,6 +26,8 @@ userRoutes.put('/changeactivation/:userId', changeActivation)
 userRoutes.put('/resendactivation', resendActivation)
 userRoutes.put('/forgotpassword', forgotPassword)
 userRoutes.put('/resetpassword/:passwordToken', resetPassword)
+userRoutes.put('/changepassword', changePassword)
+userRoutes.put('/updateuser', updateUser)
 
 
 export default userRoutes;
