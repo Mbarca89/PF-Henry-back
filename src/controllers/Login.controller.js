@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import { FRONT_HOST } from "../../config.js";
+import bcrypt from "bcryptjs";
 
 const googleLogin = async (req, res) => {
   try {
@@ -30,13 +31,14 @@ const googleLogin = async (req, res) => {
           commerceName: googleUser[0].commerceName,
           role: googleUser[0].role,
           cart: googleUser[0].cart,
+          active:googleUser[0].active
         }))
-       return res.redirect(`${FRONT_HOST}/products`)
+        return res.redirect(`${FRONT_HOST}/products`)
       })
     }
   } catch (error) {
     return res.status(403).send(error.message)
-    
+
   }
 
 }
@@ -45,10 +47,13 @@ const Login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email, password });
+    const user = await User.findOne({ email });
     if (!user) {
-      throw Error("Email o contraseña incorrecta");
+      throw Error("No existe un usuario con ese Email");
     }
+
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (!passwordMatch) throw Error("Contraseña incorrecta")
 
     jwt.sign({ user }, "secretKey", (err, token) => {
       if (err) {
@@ -69,6 +74,7 @@ const Login = async (req, res) => {
           commerceName: user.commerceName,
           role: user.role,
           cart: user.cart,
+          active: user.active
         },
       });
     });
