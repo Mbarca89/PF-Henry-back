@@ -52,7 +52,6 @@ export const success = async (req, res) => {
         const { orderId } = req.params
         const order = await Order.findById(orderId)
         if (!order) throw Error('Orden no encontrada!')
-        console.log(order.user)
         const user = await User.findById(order.user)
         if (!user) throw Error('Usuario no encontrado!')
 
@@ -76,7 +75,6 @@ export const success = async (req, res) => {
                 user: order.user
             })
             
-            console.log(seller.clients)
             await foundProduct.save()
             await seller.save()
         }

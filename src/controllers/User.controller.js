@@ -92,7 +92,6 @@ const activateUser = async (req, res) => {
 
 const resendActivation = async (req, res) => {
     try {
-        console.log(req.body)
         const { email } = req.body
         if (!email) throw Error('El email es obligatorio!')
 
@@ -140,7 +139,7 @@ const getPurchasedProducts = async (req, res) => {
 
 const getClients = async (req, res) => {
     try {
-        const { userId } = req.body
+        const { userId } = req.params
         const user = await User.findById(userId).populate('clients.product', 'name price hasDiscount discount').populate('clients.user', 'name email address city province postalCode')
         if (!user) throw Error('Usuario no encontrado!')
         const clients = user.clients.map(client => {
@@ -182,7 +181,6 @@ const changeActivation = async (req, res) => {
             return res.status(200).send("Usuario desactivado correctamente");
         else return res.status(200).send("Usuario activado correctamente");
     } catch (error) {
-        console.log(error.message)
         return res.status(400).send(error.message);
     }
 };

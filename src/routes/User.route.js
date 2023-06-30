@@ -19,7 +19,7 @@ const userRoutes = Router();
 userRoutes.post('/register', createUser)
 userRoutes.get('/', getUsers)
 userRoutes.get('/sellers', getSellers)
-userRoutes.get('/clients', getClients)
+userRoutes.get('/clients/:userId', getClients)
 userRoutes.get('/activate/:token', activateUser)
 userRoutes.get('/purchasedproducts/:userId', getPurchasedProducts)
 userRoutes.put('/changeactivation/:userId', changeActivation)

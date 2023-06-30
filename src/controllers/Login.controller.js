@@ -10,7 +10,6 @@ const googleLogin = async (req, res) => {
       const name = `${googleUser.googleName} ${googleUser.googleLastName}`
       res.cookie('email', googleUser.googleEmail);
       res.cookie('name', name)
-      console.log(FRONT_HOST)
       return res.redirect(`${FRONT_HOST}/login`)
     }
     if (googleUser[0]?.name) {
