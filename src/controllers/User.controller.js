@@ -40,7 +40,7 @@ const createUser = async (req, res) => {
 
         await transporter.sendMail(mailOptions)
 
-        return res.status(201).json({ newUser, newCart })
+        return res.status(201).json({ user:newUser, newCart })
 
     } catch (error) {
         if (error.code === 11000) {
