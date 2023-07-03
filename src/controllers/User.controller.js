@@ -127,7 +127,7 @@ const getPurchasedProducts = async (req, res) => {
 
         const user = await User.findById(userId).populate({
             path: 'purchasedProducts.product',
-            select: 'name photos price description'
+            select: 'name photos price description reviews'
         })
         if (!user) throw Error('Usuario no encontrado!')
 
