@@ -43,8 +43,6 @@ const removeProduct = async (req, res) => {
     try {
         const { cartId, productId } = req.query
 
-        console.log(cartId, productId)
-
         const cart = await Cart.findById(cartId)
         if (!cart) throw Error('El carrito no existe!')
 

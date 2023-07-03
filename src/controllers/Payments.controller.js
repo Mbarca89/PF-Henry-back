@@ -52,15 +52,19 @@ export const success = async (req, res) => {
         const { orderId } = req.params
         const order = await Order.findById(orderId)
         if (!order) throw Error('Orden no encontrada!')
-        console.log(order.user)
         const user = await User.findById(order.user)
         if (!user) throw Error('Usuario no encontrado!')
 
-        const purchasedProducts = order.productList.map((product) => ({
-            product: product.itemId
-        }))
+        const purchasedProducts = order.productList.map((product) => {
+            console.log(product)
+            const isProductExist = user.purchasedProducts.some(item => item.product.equals(product.itemId));
+            return !isProductExist ? { product: product.itemId } : undefined
+        })
 
-        user.purchasedProducts.push(...purchasedProducts)
+        const filteredProducts = purchasedProducts.filter(item => item !== undefined);
+
+        user.purchasedProducts.push(...filteredProducts)
+
         await user.save()
 
         for (const product of order.productList) {
@@ -69,14 +73,13 @@ export const success = async (req, res) => {
             foundProduct.stock -= Number(product.quantity)
 
             const seller = await User.findById(foundProduct.seller)
-            if(!seller) throw Error ('Vendedor no encontrado!')
+            if (!seller) throw Error('Vendedor no encontrado!')
             seller.clients.push({
-                product:foundProduct._id,
-                quantity:product.quantity,
+                product: foundProduct._id,
+                quantity: product.quantity,
                 user: order.user
             })
-            
-            console.log(seller.clients)
+
             await foundProduct.save()
             await seller.save()
         }

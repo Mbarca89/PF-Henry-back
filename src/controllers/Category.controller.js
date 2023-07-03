@@ -43,6 +43,8 @@ const updateCategory = async (req, res) => {
   try {
     const { id, categoryName } = req.body;
 
+    if(!id) throw Error ('Falta la ID de la categoría')
+
     const updatedCategory = await Category.findByIdAndUpdate(
       id,
       { categoryName },
