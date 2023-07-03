@@ -237,7 +237,6 @@ const changeActivation = async (req, res) => {
 const postReview = async (req, res) => {
   try {
     const { rating, review, productId, userId } = req.body;
-    console.log(userId, productId)
     const product = await Product.findById(mongoose.Types.ObjectId(productId));
     if (!product) throw Error("Producto no encontrado!");
     const user = await User.findById(mongoose.Types.ObjectId(userId));
