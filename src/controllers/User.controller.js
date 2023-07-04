@@ -19,7 +19,7 @@ const createUser = async (req, res) => {
             if (!commerceName) throw Error('El nombre de la tienda es obligatorio!')
             if (!phone) throw Error('El número de teléfono es obligatorio!')
             const user = await User.findOne({email})
-            if(user.role === 'user') {
+            if(user?.role === 'user') {
                 user.commerceName = commerceName
                 user.phone = phone
                 user.role = 'seller'
@@ -181,10 +181,14 @@ const changeActivation = async (req, res) => {
     try {
         const { active } = req.body;
         const { userId } = req.params;
-        const user = await User.findById(userId);
-        if (!user) throw Error("Producto no encontrado!");
-        user.active = active;
-        await user.save();
+        if(active) {
+            const user = await User.findByIdAndUpdate(userId,{banned:true},{new: true});
+            if (!user) throw Error("Usuario no encontrado!");
+        }else {
+            const user = await User.findByIdAndUpdate(userId,{banned:false},{new: true});
+            if (!user) throw Error("Usuario no encontrado!");
+        }
+
         if (active === false)
             return res.status(200).send("Usuario desactivado correctamente");
         else return res.status(200).send("Usuario activado correctamente");

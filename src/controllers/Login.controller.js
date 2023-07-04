@@ -13,6 +13,7 @@ const googleLogin = async (req, res) => {
       return res.redirect(`${FRONT_HOST}/login`)
     }
     if (googleUser[0]?.name) {
+      if(googleUser[0]?.banned) throw Error ('Tu cuenta fue desactivada, Contacta a un administrador!')
       jwt.sign({ googleUser }, "secretKey", (err, token) => {
         if (err) {
           throw Error("Error al crear el token.");
@@ -50,6 +51,8 @@ const Login = async (req, res) => {
     if (!user) {
       throw Error("No existe un usuario con ese Email");
     }
+
+    if(user.banned) throw Error ('Tu cuenta fue desactivada, Contacta a un administrador!')
 
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) throw Error("Contraseña incorrecta")
