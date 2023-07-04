@@ -213,7 +213,7 @@ const forgotPassword = async (req, res) => {
             from: 'naturessence23@gmail.com',
             to: user.email,
             subject: 'Resetear contraseña',
-            text: `Hola, estás recibiendo este correo porque has solicitado resetear tu contraseña. Sigue el siguiente enlace para conrinuar: ${FRONT_HOST}/resetpassword/${user.passwordToken}. Si no has sido tu puedes ignorar este mensaje.`,
+            text: `Hola, estás recibiendo este correo porque has solicitado resetear tu contraseña. Sigue el siguiente enlace para continuar: ${FRONT_HOST}/resetpassword/${user.passwordToken}. Si no has sido tu puedes ignorar este mensaje.`,
         };
 
         await transporter.sendMail(mailOptions)
