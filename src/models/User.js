@@ -75,6 +75,10 @@ const userSchema = new Schema({
     type: Boolean,
     default: false
   },
+  banned:{
+    type: Boolean,
+    default: false
+  },
   activationToken:{
     type: String
   },
