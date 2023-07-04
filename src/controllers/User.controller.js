@@ -18,6 +18,14 @@ const createUser = async (req, res) => {
         if (role === 'seller') {
             if (!commerceName) throw Error('El nombre de la tienda es obligatorio!')
             if (!phone) throw Error('El número de teléfono es obligatorio!')
+            const user = await User.findOne({email})
+            if(user.role === 'user') {
+                user.commerceName = commerceName
+                user.phone = phone
+                user.role = 'seller'
+                await user.save()
+                return res.status(200).json({user})
+            }
         }
 
         const hashedPass = await bcrypt.hash(password, 10)
@@ -44,7 +52,7 @@ const createUser = async (req, res) => {
 
     } catch (error) {
         if (error.code === 11000) {
-            return res.status(400).send(error.message)
+            return res.status(400).send('Ya existe un usuario con ese correo electrónico.')
         }
         else return res.status(400).send(error.message)
     }
