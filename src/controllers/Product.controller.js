@@ -414,6 +414,23 @@ const getPhotos = async (req,res) => {
   }
 }
 
+const deletePhoto = async (req,res) => {
+  try {
+    const {index} = req.query
+    const {id} = req.params
+    const product = await Product.findById(mongoose.Types.ObjectId(id))
+    if(!product) throw Error ('Producto no encontrado!')
+
+    if(product.photos.length === 1) throw Error ('El producto no puede quedar sin imagenes')
+
+    product.photos.splice(index,1)
+    await product.save()
+    return res.status(200).json(product.photos)
+  } catch (error) {
+    return res.status(400).send(error.message)
+  }
+}
+
 export {
   postProduct,
   getProductById,
@@ -426,5 +443,6 @@ export {
   deleteProduct,
   getFeatured,
   getAllProdcuts,
-  getPhotos
+  getPhotos,
+  deletePhoto
 };
