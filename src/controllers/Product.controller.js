@@ -75,11 +75,30 @@ const getProductById = async (req, res) => {
 const getFromSeller = async (req, res) => {
   try {
     const { userId } = req.params;
-    const products = await Product.find({ seller: userId });
+    const products = await Product.aggregate([
+      { $match: { seller:mongoose.Types.ObjectId(userId) } },
+      {
+        $addFields: {
+          ratingAverage: {
+            $cond: {
+              if: { $eq: [{ $avg: "$rating" }, null] },
+              then: 1,
+              else: { $avg: "$rating" },
+            },
+          },
+        },
+      },
+    ]);
     if (!products) {
       throw Error("Producto no encontrado!");
     }
-    return res.status(200).json(products);
+
+    const transformedProducts = products.map((product) => {
+      const { _id, __v, ...rest } = product;
+      return { id: _id, ...rest };
+    });
+
+    return res.status(200).json(transformedProducts);
   } catch (error) {
     return res.status(500).send(error.message);
   }
@@ -173,21 +192,39 @@ const getProducts = async (req, res) => {
 
 const updateProduct = async (req, res) => {
   try {
-    const {
-      id,
-      name,
-      price,
-      description,
-      stock,
-      hasDiscount,
-      discount,
-      photos,
-      category,
-      freeShipping,
-      sales,
-      seller,
-      isActive,
-    } = req.body;
+    console.log(req.body)
+    console.log(req.files)
+    if (!req.body.data) throw Error("No hay datos!");
+    const { name, price, description, stock, category, freeShipping, id, hasDiscount, discount } =
+      JSON.parse(req.body.data);
+    if (!name) throw Error("El nombre no puede estar vacio!");
+    if (!price) throw Error("El precio no puede estar vacio!");
+    if (!description) throw Error("La descripción no puede estar vacia!");
+    if (!stock) throw Error("El stock no puede estar vacio!");
+    const photos = req.files?.photos;
+    let uploadPhotos = [];
+    if (photos) {
+      if (!photos.length && photos.name) {
+        const result = await uploadImage(photos.tempFilePath);
+        await fs.remove(photos.tempFilePath);
+        uploadPhotos = {
+          url: result.secure_url,
+          public_id: result.public_id,
+        };
+      }
+      if (photos.length > 1) {
+        uploadPhotos = await Promise.all(
+          photos.map(async (photo) => {
+            const result = await uploadImage(photo.tempFilePath);
+            await fs.remove(photo.tempFilePath);
+            return {
+              url: result.secure_url,
+              public_id: result.public_id,
+            };
+          })
+        );
+      }
+    }
 
     const updatedProduct = await Product.findByIdAndUpdate(
       id,
@@ -198,22 +235,29 @@ const updateProduct = async (req, res) => {
         stock,
         hasDiscount,
         discount,
-        photos,
         category,
         freeShipping,
-        sales,
-        seller,
-        isActive,
       },
       { new: true }
     );
-
     if (!updatedProduct) {
       throw Error("Producto no encontrado!");
     }
 
+    const product = await Product.findById(id)
+    if(photos){
+      if(photos.length) {
+        product.photos.push(...uploadPhotos)
+        await product.save()
+      }else {
+        product.photos.push(uploadPhotos)
+        await product.save()
+      }
+    }
+
     return res.status(200).json(updatedProduct);
   } catch (error) {
+    console.log(error.message)
     return res.status(500).send(error.message);
   }
 };
@@ -359,6 +403,17 @@ const getAllProdcuts = async (req,res) => {
   }
 }
 
+const getPhotos = async (req,res) => {
+  try {
+    const {id} = req.params
+    const product = await Product.findById(id)
+    if(!product) throw Error ('Producto no encontrado')
+    return res.status(200).json(product.photos)
+  } catch (error) {
+    return res.status(400).send(error.message)
+  }
+}
+
 export {
   postProduct,
   getProductById,
@@ -370,5 +425,6 @@ export {
   getOffers,
   deleteProduct,
   getFeatured,
-  getAllProdcuts
+  getAllProdcuts,
+  getPhotos
 };
