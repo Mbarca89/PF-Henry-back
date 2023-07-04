@@ -11,7 +11,8 @@ import {
     deleteProduct,
     getFeatured,
     getAllProdcuts,
-    getPhotos
+    getPhotos,
+    deletePhoto
 } from '../controllers/Product.controller.js'
 
 
@@ -30,6 +31,7 @@ productRoutes.get('/photos/:id', getPhotos)
 productRoutes.put('/changeactivation/:productId', changeActivation)
 productRoutes.put("/", updateProduct);
 productRoutes.delete('/:id',deleteProduct);
+productRoutes.delete('/photos/:id',deletePhoto);
 
 
 
