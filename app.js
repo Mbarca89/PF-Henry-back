@@ -11,8 +11,9 @@ import { fileURLToPath } from 'url';
 
 const app = express();
 const __dirname = dirname(fileURLToPath(import.meta.url));
-app.use(cors())
-app.options('*', cors());
+app.use(cors({
+  origin: '*',
+  credentials: true}));
 app.use((req, res, next) => {
   if (req.method === "OPTIONS") {
     return res.status(200).end();
