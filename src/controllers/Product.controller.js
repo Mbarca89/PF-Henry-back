@@ -197,8 +197,6 @@ const getProducts = async (req, res) => {
 
 const updateProduct = async (req, res) => {
   try {
-    console.log(req.body)
-    console.log(req.files)
     if (!req.body.data) throw Error("No hay datos!");
     const { name, price, description, stock, category, freeShipping, id, hasDiscount, discount } =
       JSON.parse(req.body.data);
@@ -262,7 +260,6 @@ const updateProduct = async (req, res) => {
 
     return res.status(200).json(updatedProduct);
   } catch (error) {
-    console.log(error.message)
     return res.status(500).send(error.message);
   }
 };
