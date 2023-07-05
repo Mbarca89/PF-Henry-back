@@ -8,8 +8,16 @@ const googleLogin = async (req, res) => {
     const googleUser = req.user
     if (!googleUser[0]?.name) {
       const name = `${googleUser.googleName} ${googleUser.googleLastName}`
-      res.cookie('email', googleUser.googleEmail);
-      res.cookie('name', name)
+      res.cookie('email', googleUser.googleEmail,{
+        httpOnly: true,
+        sameSite: "None",
+        secure: false,
+      });
+      res.cookie('name', name,{
+        httpOnly: true,
+        sameSite: "None",
+        secure: false,
+      })
       return res.redirect(`${FRONT_HOST}/login`)
     }
     if (googleUser[0]?.name) {
@@ -18,7 +26,11 @@ const googleLogin = async (req, res) => {
         if (err) {
           throw Error("Error al crear el token.");
         }
-        res.cookie('token', token);
+        res.cookie('token', token,{
+          httpOnly: true,
+          sameSite: "None",
+          secure: false,
+        });
         res.cookie('user', JSON.stringify({
           id: googleUser[0].id,
           name: googleUser[0].name,
@@ -32,6 +44,10 @@ const googleLogin = async (req, res) => {
           role: googleUser[0].role,
           cart: googleUser[0].cart,
           active:googleUser[0].active
+        },{
+          httpOnly: true,
+          sameSite: "None",
+          secure: false,
         }))
         return res.redirect(`${FRONT_HOST}/products`)
       })
@@ -81,6 +97,7 @@ const Login = async (req, res) => {
       });
     });
   } catch (error) {
+    console.log(error.message)
     return res.status(400).send(error.message);
   }
 };
