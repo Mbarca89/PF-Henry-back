@@ -177,9 +177,14 @@ const getProducts = async (req, res) => {
       { $limit: options.limit },
     ]);
 
+    const populatedProducts = await Product.populate(products, {
+      path: "category",
+      select:'categoryName'
+    });
+
     const totalCount = await Product.countDocuments(filters);
 
-    const transformedProducts = products.map((product) => {
+    const transformedProducts = populatedProducts.map((product) => {
       const { _id, __v, ...rest } = product;
       return { id: _id, ...rest };
     });
