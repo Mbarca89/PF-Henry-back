@@ -11,12 +11,12 @@ const verifyToken = async (req, res, next) => {
       if (payload) {
         next();
       } else {
-        res.sendStatus(403);
+        return res.status(403).message('Necesitas iniciar sesion.')
       }
     };
 
   } catch (error) {
-    return res.status(403).send(error.message)
+    return res.status(403).send('Necesitas iniciar sesion.')
   }
 }
 
