@@ -56,7 +56,6 @@ export const success = async (req, res) => {
         if (!user) throw Error('Usuario no encontrado!')
 
         const purchasedProducts = order.productList.map((product) => {
-            console.log(product)
             const isProductExist = user.purchasedProducts.some(item => item.product.equals(product.itemId));
             return !isProductExist ? { product: product.itemId } : undefined
         })
