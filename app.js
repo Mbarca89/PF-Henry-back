@@ -11,9 +11,12 @@ import { fileURLToPath } from 'url';
 
 const app = express();
 const __dirname = dirname(fileURLToPath(import.meta.url));
-app.use(cors({
-  origin: '*',
-  credentials: true}));
+const corsOptions = {
+  origin: true, // Permite todas las solicitudes de origen cruzado
+  credentials: true, // Habilita el intercambio de cookies
+};
+
+app.use(cors(corsOptions));
 app.use((req, res, next) => {
   if (req.method === "OPTIONS") {
     return res.status(200).end();
