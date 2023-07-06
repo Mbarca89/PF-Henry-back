@@ -22,3 +22,5 @@ export const MERCADO_PAGO_API_KEY = process.env.MERCADO_PAGO_API_TOKEN
 export const MAIL_PASSWORD = process.env.MAIL_PASSWORD
 
 export const FRONT_HOST = process.env.FRONT_HOST
+
+export const SECRET = process.env.SECRET

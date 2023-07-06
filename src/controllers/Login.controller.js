@@ -1,19 +1,21 @@
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
-import { FRONT_HOST } from "../../config.js";
+import { FRONT_HOST, SECRET } from "../../config.js";
 import bcrypt from "bcryptjs";
+import CryptoJS from "crypto-js";
 
 const googleLogin = async (req, res) => {
   try {
+    let data = ''
     const googleUser = req.user
     if (!googleUser[0]?.name) {
       const name = `${googleUser.googleName} ${googleUser.googleLastName}`
-      res.cookie('email', googleUser.googleEmail,{
+      res.cookie('email', googleUser.googleEmail, {
         httpOnly: false,
         sameSite: "None",
         secure: true,
       });
-      res.cookie('name', name,{
+      res.cookie('name', name, {
         httpOnly: false,
         sameSite: "None",
         secure: true,
@@ -21,17 +23,12 @@ const googleLogin = async (req, res) => {
       return res.redirect(`${FRONT_HOST}/login`)
     }
     if (googleUser[0]?.name) {
-      if(googleUser[0]?.banned) throw Error ('Tu cuenta fue desactivada, Contacta a un administrador!')
+      if (googleUser[0]?.banned) throw Error('Tu cuenta fue desactivada, Contacta a un administrador!')
       jwt.sign({ googleUser }, "secretKey", (err, token) => {
         if (err) {
           throw Error("Error al crear el token.");
         }
-        res.cookie('token', token,{
-          httpOnly: false,
-          sameSite: "None",
-          secure: true,
-        });
-        res.cookie('user', JSON.stringify({
+        const user = {
           id: googleUser[0].id,
           name: googleUser[0].name,
           email: googleUser[0].email,
@@ -43,20 +40,16 @@ const googleLogin = async (req, res) => {
           commerceName: googleUser[0].commerceName,
           role: googleUser[0].role,
           cart: googleUser[0].cart,
-          active:googleUser[0].active
-        },{
-          httpOnly: false,
-          sameSite: "None",
-          secure: true,
-        }))
-        return res.redirect(`${FRONT_HOST}/products`)
+          active: googleUser[0].active
+        }
+        data = `token=${token}&user=${JSON.stringify(user)}`
+        const encryptedData = CryptoJS.AES.encrypt(data, SECRET).toString();
+        return res.redirect(`${FRONT_HOST}/redirect?data=${encodeURIComponent(encryptedData)}`)
       })
     }
   } catch (error) {
     return res.status(403).send(error.message)
-
   }
-
 }
 
 const Login = async (req, res) => {
@@ -68,7 +61,7 @@ const Login = async (req, res) => {
       throw Error("No existe un usuario con ese Email");
     }
 
-    if(user.banned) throw Error ('Tu cuenta fue desactivada, Contacta a un administrador!')
+    if (user.banned) throw Error('Tu cuenta fue desactivada, Contacta a un administrador!')
 
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) throw Error("Contraseña incorrecta")
