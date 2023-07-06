@@ -17,8 +17,8 @@ const getCart = async (req, res) => {
 const addProduct = async (req, res) => {
     try {
         const { id, quantity, userId } = req.body
-        if(userId === '') throw Error ('Necesitas iniciar seseión.')
-        if(!userId) throw Error ('Necesitas iniciar seseión.')
+        if(userId === '') throw Error ('¡Necesitas iniciar sesión!')
+        if(!userId) throw Error ('¡Necesitas iniciar sesión!')
         const product = await Product.findById(id)
         if (!product) throw Error('Producto no encontrado!')
 
