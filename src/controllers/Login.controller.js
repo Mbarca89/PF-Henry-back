@@ -11,12 +11,12 @@ const googleLogin = async (req, res) => {
       res.cookie('email', googleUser.googleEmail,{
         httpOnly: false,
         sameSite: "None",
-        secure: false,
+        secure: true,
       });
       res.cookie('name', name,{
         httpOnly: false,
         sameSite: "None",
-        secure: false,
+        secure: true,
       })
       return res.redirect(`${FRONT_HOST}/login`)
     }
@@ -29,7 +29,7 @@ const googleLogin = async (req, res) => {
         res.cookie('token', token,{
           httpOnly: false,
           sameSite: "None",
-          secure: false,
+          secure: true,
         });
         res.cookie('user', JSON.stringify({
           id: googleUser[0].id,
@@ -47,7 +47,7 @@ const googleLogin = async (req, res) => {
         },{
           httpOnly: false,
           sameSite: "None",
-          secure: false,
+          secure: true,
         }))
         return res.redirect(`${FRONT_HOST}/products`)
       })
