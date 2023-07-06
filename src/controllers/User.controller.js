@@ -273,8 +273,12 @@ const changePassword = async (req,res) => {
 
 const updateUser = async (req,res) => {
     try {
-        const {id, name, address, city, province, postalCode, phone } = req.body
+        const {id, name, address, city, province, postalCode } = req.body
         if(!id) throw Error ('Se necesita la ID del usuario.')
+        if(!name) throw Error ('El nombre no puede estar vacio')
+        if(!addess) throw Error ('La direccion no puede estar vacia')
+        if(!city) throw Error ('La ciudad no puede estar vacia')
+        if(!province) throw Error ('La provincia no puede estar vacia')
         
         const user = await User.findByIdAndUpdate(id,
             {
@@ -283,7 +287,6 @@ const updateUser = async (req,res) => {
                 city,
                 province,
                 postalCode,
-                phone
         },
         {new:true}
         )
