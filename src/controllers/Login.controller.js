@@ -9,12 +9,12 @@ const googleLogin = async (req, res) => {
     if (!googleUser[0]?.name) {
       const name = `${googleUser.googleName} ${googleUser.googleLastName}`
       res.cookie('email', googleUser.googleEmail,{
-        httpOnly: true,
+        httpOnly: false,
         sameSite: "None",
         secure: false,
       });
       res.cookie('name', name,{
-        httpOnly: true,
+        httpOnly: false,
         sameSite: "None",
         secure: false,
       })
@@ -27,7 +27,7 @@ const googleLogin = async (req, res) => {
           throw Error("Error al crear el token.");
         }
         res.cookie('token', token,{
-          httpOnly: true,
+          httpOnly: false,
           sameSite: "None",
           secure: false,
         });
@@ -45,7 +45,7 @@ const googleLogin = async (req, res) => {
           cart: googleUser[0].cart,
           active:googleUser[0].active
         },{
-          httpOnly: true,
+          httpOnly: false,
           sameSite: "None",
           secure: false,
         }))
