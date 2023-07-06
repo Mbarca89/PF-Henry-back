@@ -1,8 +1,10 @@
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
+import Cart from "../models/Cart.js";
 import { FRONT_HOST, SECRET } from "../../config.js";
 import bcrypt from "bcryptjs";
 import CryptoJS from "crypto-js";
+import transporter from "../libs/nodemailer.js";
 
 const googleLogin = async (req, res) => {
   try {
@@ -10,17 +12,35 @@ const googleLogin = async (req, res) => {
     const googleUser = req.user
     if (!googleUser[0]?.name) {
       const name = `${googleUser.googleName} ${googleUser.googleLastName}`
-      res.cookie('email', googleUser.googleEmail, {
-        httpOnly: false,
-        sameSite: "None",
-        secure: true,
-      });
-      res.cookie('name', name, {
-        httpOnly: false,
-        sameSite: "None",
-        secure: true,
+      // res.cookie('email', googleUser.googleEmail, {
+      //   httpOnly: false,
+      //   sameSite: "None",
+      //   secure: true,
+      // });
+      // res.cookie('name', name, {
+      //   httpOnly: false,
+      //   sameSite: "None",
+      //   secure: true,
+      // })
+
+      const user = new User({ name, email:googleUser.googleEmail, password: Math.random().toString(36).substring(2), address:'Completar', city:'Completar', province:'Completar', postalCode:0, active:true, role:'cliente', activationToken: Math.random().toString(36).substring(2) })
+      await user.save()
+
+      const newCart = new Cart({ user: user._id })
+      await newCart.save()
+
+      user.cart = newCart._id
+      await user.save()
+      
+      jwt.sign({ googleUser }, "secretKey", (err, token) => {
+        if (err) {
+          throw Error("Error al crear el token.");
+        }
+        data = `token=${token}&user=${JSON.stringify(user)}`
+        const encryptedData = CryptoJS.AES.encrypt(data, SECRET).toString();
+        return res.redirect(`${FRONT_HOST}/redirect?data=${encodeURIComponent(encryptedData)}`)
       })
-      return res.redirect(`${FRONT_HOST}/login`)
+      
     }
     if (googleUser[0]?.name) {
       if (googleUser[0]?.banned) throw Error('Tu cuenta fue desactivada, Contacta a un administrador!')
